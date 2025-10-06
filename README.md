@@ -201,6 +201,10 @@ All events are **anonymous**, and any extra metadata should **not include person
 * `received_at` – Server receipt time
 
 ---
+### Repo Layout
+....coming soon
+
+---
 
 ### Roadmap
 

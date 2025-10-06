@@ -85,9 +85,9 @@ The system is modular, meaning each component can be extended or replaced indepe
 
 #### Prerequisites
 
-* Deno (v1.30+ recommended)
-* ( Optionally ) Node.js (for building SvelteKit dashboard)
-* SQLite (or any preferred database for production)
+* Deno 2
+* Node.js (for building SvelteKit dashboard)
+* SQLite - ? - (or any preferred database for production)
 
 #### Installation
 
@@ -102,7 +102,7 @@ cd 4Insights
 
 ```bash
 cd dashboard
-npm install  - ? - deno install
+npm install 
 ```
 
 3. Start the Collector API (development mode):
@@ -116,7 +116,8 @@ deno run --allow-net --allow-read --allow-write main.ts
 
 ```bash
 cd ../dashboard
-npm run dev - ? - deno task dev
+npm run prepare ( Optional )
+npm run dev 
 ```
 
 5. Access the dashboard in your browser:
@@ -206,7 +207,7 @@ All events are **anonymous**, and any extra metadata should **not include person
 
 ---
 
-### Roadmap
+<!-- ### Roadmap
 
 **Phase 1 (MVP)**
 
@@ -227,7 +228,7 @@ All events are **anonymous**, and any extra metadata should **not include person
 * Webhooks and notifications
 * Billing, quotas, and self-hosted deployment
 
----
+--- -->
 
 ### Contributing
 

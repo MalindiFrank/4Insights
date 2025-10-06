@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2022"],
+    "jsx": "react-jsx",
+    "noEmit": true
+  },
+  "tasks": {
+    "test:collector": "deno test --unstable --allow-net --allow-read collector/tests",
+    "test:tracker": "deno test --unstable --allow-net --allow-read tracker-src/tests",
+    "bundle:tracker": "deno bundle tracker-src/index.ts tracker-src/build/tracker.js",
+    "run:collector": "deno run --unstable --allow-net --allow-read --allow-write collector/main.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["node_modules/", "tracker-src/build/"]
+    }
+  }
+}
+
+Notes:
+
+--unstable shown in tasks can be removed if not needed by used APIs.
+The bundle:tracker task creates the single tracker file for deployment.

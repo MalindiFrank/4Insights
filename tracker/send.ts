@@ -5,7 +5,7 @@ export interface TrackingPayload {
   type: string;
   path: string;
   timestamp: string;
-  meta: Record<string, any>;
+  meta: Record<string, unknown>;
 }
 
 export interface SendOptions {
@@ -17,25 +17,25 @@ export interface SendOptions {
 /**
  * Send tracking payload using the most appropriate method
  */
-export async function sendPayload(
+export function sendPayload(
   payload: TrackingPayload,
-  options: SendOptions = {}
+  options: SendOptions = {},
 ): Promise<boolean> {
   const {
-    endpoint = '/api/collect',
+    endpoint = "/api/collect",
     timeout = 5000,
     retries = 2,
   } = options;
 
   // Try sendBeacon first (most reliable for page unloads)
-  if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+  if (typeof navigator !== "undefined" && navigator.sendBeacon) {
     try {
       const blob = new Blob([JSON.stringify(payload)], {
-        type: 'application/json',
+        type: "application/json",
       });
       return navigator.sendBeacon(endpoint, blob);
     } catch (error) {
-      console.warn('sendBeacon failed, falling back to fetch:', error);
+      console.warn("sendBeacon failed, falling back to fetch:", error);
     }
   }
 
@@ -50,7 +50,7 @@ async function sendWithRetry(
   payload: TrackingPayload,
   endpoint: string,
   timeout: number,
-  retries: number
+  retries: number,
 ): Promise<boolean> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -58,9 +58,9 @@ async function sendWithRetry(
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -73,17 +73,19 @@ async function sendWithRetry(
       }
 
       if (attempt === retries) {
-        console.warn('Tracking request failed after retries:', response.status);
+        console.warn("Tracking request failed after retries:", response.status);
         return false;
       }
     } catch (error) {
       if (attempt === retries) {
-        console.warn('Tracking request failed after retries:', error);
+        console.warn("Tracking request failed after retries:", error);
         return false;
       }
-      
+
       // Wait before retry (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      );
     }
   }
 
@@ -97,7 +99,7 @@ export function createPayload(
   siteToken: string,
   type: string,
   path: string,
-  meta: Record<string, any> = {}
+  meta: Record<string, unknown> = {},
 ): TrackingPayload {
   return {
     site_token: siteToken,
@@ -111,14 +113,14 @@ export function createPayload(
 /**
  * Batch multiple payloads into a single request
  */
-export async function sendBatch(
+export function sendBatch(
   payloads: TrackingPayload[],
-  options: SendOptions = {}
+  options: SendOptions = {},
 ): Promise<boolean> {
   if (payloads.length === 0) return true;
 
   const {
-    endpoint = '/api/collect/batch',
+    endpoint = "/api/collect/batch",
     timeout = 10000,
     retries = 2,
   } = options;
@@ -128,5 +130,5 @@ export async function sendBatch(
     timestamp: new Date().toISOString(),
   };
 
-  return sendWithRetry(batchPayload as any, endpoint, timeout, retries);
+  return sendWithRetry(batchPayload as TrackingPayload, endpoint, timeout, retries);
 }

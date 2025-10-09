@@ -284,3 +284,12 @@ typings/
 dist/
 
 .marscode/
+
+# SvelteKit build outputs (dashboard)
+dashboard/.svelte-kit/
+
+# Tracker bundled artifacts
+tracker/build/
+
+# Dashboard build directory (if using certain adapters)
+dashboard/build/

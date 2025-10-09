@@ -1,4 +1,4 @@
-import { assert } from "https://deno.land/std@0.203.0/testing/asserts.ts";
+import { assert } from "std/testing/asserts";
 
 // small helper function for test
 export function createPayload(siteToken: string, type: string, path: string) {

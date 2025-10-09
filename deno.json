@@ -2,7 +2,7 @@
   "compilerOptions": {
     "lib": ["dom", "es2022", "deno.ns"],
     "jsx": "react-jsx",
-    "noEmit": true
+    "checkJs": false
   },
   "tasks": {
     "test:collector": "deno test --allow-net --allow-read collector/tests",
@@ -12,9 +12,14 @@
     "fmt": "deno fmt",
     "lint": "deno lint"
   },
+  "imports": {
+    "std/testing/asserts": "https://deno.land/std@0.203.0/testing/asserts.ts"
+  },
   "lint": {
-    "rules": {
-      "exclude": ["node_modules/", "tracker/build/"]
-    }
+    "exclude": [
+      "node_modules/",
+      "tracker/build/",
+      "dashboard/.svelte-kit/"
+    ]
   }
 }

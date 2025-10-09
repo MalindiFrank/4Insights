@@ -10,7 +10,7 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-},
+  },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^6.1.0",
     "@sveltejs/kit": "^2.43.2",
@@ -23,4 +23,3 @@
     "@testing-library/svelte": "^5.0.0"
   }
 }
-

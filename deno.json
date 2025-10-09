@@ -15,6 +15,13 @@
   "imports": {
     "std/testing/asserts": "https://deno.land/std@0.203.0/testing/asserts.ts"
   },
+  "fmt": {
+    "exclude": [
+      "node_modules/",
+      "tracker/build/",
+      "dashboard/.svelte-kit/"
+    ]
+  },
   "lint": {
     "exclude": [
       "node_modules/",

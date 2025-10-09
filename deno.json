@@ -7,7 +7,7 @@
   "tasks": {
     "test:collector": "deno test --allow-net --allow-read collector/tests",
     "test:tracker": "deno test --allow-net --allow-read tracker/tests",
-    "bundle:tracker": "deno bundle tracker/index.ts tracker/build/tracker.js",
+    "bundle:tracker": "deno bundle tracker/index.ts -o tracker/build/tracker.js",
     "run:collector": "deno run --allow-net --allow-read --allow-write collector/main.ts",
     "fmt": "deno fmt",
     "lint": "deno lint"

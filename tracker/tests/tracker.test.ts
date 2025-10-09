@@ -7,7 +7,7 @@ export function createPayload(siteToken: string, type: string, path: string) {
     type,
     path,
     timestamp: new Date().toISOString(),
-    meta: {}
+    meta: {},
   };
 }
 
@@ -17,4 +17,3 @@ Deno.test("payload contains required fields", () => {
   assert(payload.type === "pageview");
   assert(typeof payload.timestamp === "string");
 });
-

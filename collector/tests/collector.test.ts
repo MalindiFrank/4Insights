@@ -5,4 +5,3 @@ Deno.test("collector health endpoint OK", () => {
   const status = 200;
   assertEquals(status, 200);
 });
-

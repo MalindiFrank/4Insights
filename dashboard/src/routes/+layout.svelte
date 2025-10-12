@@ -1,15 +1,11 @@
-<script>
-	import '../app.css';
+<script lang="ts">
+	import favicon from '$lib/assets/favicon.svg';
+
+	let { children } = $props();
 </script>
 
-<main>
-	<slot />
-</main>
+<svelte:head>
+	<link rel="icon" href={favicon} />
+</svelte:head>
 
-<style>
-	main {
-		padding: 1rem;
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-</style>
+{@render children?.()}

@@ -1,32 +1,8 @@
 {
-  "compilerOptions": {
-    "lib": ["dom", "es2022", "deno.ns"],
-    "jsx": "react-jsx",
-    "checkJs": false
-  },
   "tasks": {
-    "test:collector": "deno test --allow-net --allow-read collector/tests",
-    "test:tracker": "deno test --allow-net --allow-read tracker/tests",
-    "bundle:tracker": "deno bundle tracker/index.ts -o tracker/build/tracker.js",
-    "run:collector": "deno run --allow-net --allow-read --allow-write collector/main.ts",
-    "fmt": "deno fmt",
-    "lint": "deno lint"
+    "dev": "deno run --watch main.ts"
   },
   "imports": {
-    "std/testing/asserts": "https://deno.land/std@0.203.0/testing/asserts.ts"
-  },
-  "fmt": {
-    "exclude": [
-      "node_modules/",
-      "tracker/build/",
-      "dashboard/.svelte-kit/"
-    ]
-  },
-  "lint": {
-    "exclude": [
-      "node_modules/",
-      "tracker/build/",
-      "dashboard/.svelte-kit/"
-    ]
+    "@std/assert": "jsr:@std/assert@1"
   }
 }

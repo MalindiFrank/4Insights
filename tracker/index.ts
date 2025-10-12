@@ -76,10 +76,14 @@ export class Tracker {
 
   // Track a custom event
   event(eventName: string, meta: Record<string, unknown> = {}): void {
-    const payload = this.createPayload("event", globalThis.window?.location.pathname || "/", {
-      event_name: eventName,
-      ...meta,
-    });
+    const payload = this.createPayload(
+      "event",
+      globalThis.window?.location.pathname || "/",
+      {
+        event_name: eventName,
+        ...meta,
+      },
+    );
     this.sendPayload(payload);
   }
 
@@ -89,11 +93,15 @@ export class Tracker {
     value?: number,
     meta: Record<string, unknown> = {},
   ): void {
-    const payload = this.createPayload("conversion", globalThis.window?.location.pathname || "/", {
-      conversion_name: conversionName,
-      value,
-      ...meta,
-    });
+    const payload = this.createPayload(
+      "conversion",
+      globalThis.window?.location.pathname || "/",
+      {
+        conversion_name: conversionName,
+        value,
+        ...meta,
+      },
+    );
     this.sendPayload(payload);
   }
 }
@@ -130,6 +138,12 @@ export function initTracker(config: TrackerConfig): Tracker {
 
 // Global usage (for script tag)
 if (typeof globalThis.window !== "undefined") {
-  (globalThis.window as unknown as { Tracker: typeof Tracker; initTracker: typeof initTracker }).Tracker = Tracker;
-  (globalThis.window as unknown as { Tracker: typeof Tracker; initTracker: typeof initTracker }).initTracker = initTracker;
+  (globalThis.window as unknown as {
+    Tracker: typeof Tracker;
+    initTracker: typeof initTracker;
+  }).Tracker = Tracker;
+  (globalThis.window as unknown as {
+    Tracker: typeof Tracker;
+    initTracker: typeof initTracker;
+  }).initTracker = initTracker;
 }

@@ -130,5 +130,10 @@ export function sendBatch(
     timestamp: new Date().toISOString(),
   };
 
-  return sendWithRetry(batchPayload as TrackingPayload, endpoint, timeout, retries);
+  return sendWithRetry(
+    batchPayload as TrackingPayload,
+    endpoint,
+    timeout,
+    retries,
+  );
 }

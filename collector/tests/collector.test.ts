@@ -1,4 +1,4 @@
-import { assertEquals } from "std/testing/asserts";
+import { assertEquals } from "@std/assert";
 
 Deno.test("collector health endpoint OK", () => {
   // keep trivial for skeleton; later use superoak or serveTestServer to hit route

@@ -1,4 +1,4 @@
-import { assert } from "std/testing/asserts";
+import { assert } from "@std/assert";
 
 // small helper function for test
 export function createPayload(siteToken: string, type: string, path: string) {

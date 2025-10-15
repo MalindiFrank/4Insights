@@ -1,6 +1,6 @@
 // utils/storage.ts - Simple file-based append-only storage for events
 import { ensureDir } from "https://deno.land/std@0.224.0/fs/ensure_dir.ts";
-import type { AnyEvent, MetricsOverview } from "../types.ts";
+import type { AnyEvent, MetricsOverview, Site } from "../types.ts";
 
 export class FileEventStore {
   #dir: string;
@@ -60,6 +60,56 @@ export class FileEventStore {
       events.filter((e) => (e as any).type === "pageview").length;
     const topPaths = await this.metricsTopPaths();
     return { totalEvents, totalPageviews, topPaths };
+  }
+
+  async #exists(path: string): Promise<boolean> {
+    try {
+      await Deno.stat(path);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
+// Minimal Site store for admin operations
+export class FileSiteStore {
+  #dir: string;
+  #sitesFile: string;
+
+  constructor(dir: string) {
+    this.#dir = dir;
+    this.#sitesFile = `${dir}/sites.json`;
+  }
+
+  async init(): Promise<void> {
+    await ensureDir(this.#dir);
+    const exists = await this.#exists(this.#sitesFile);
+    if (!exists) {
+      await Deno.writeTextFile(this.#sitesFile, JSON.stringify([]));
+    }
+  }
+
+  async list(): Promise<Site[]> {
+    try {
+      const text = await Deno.readTextFile(this.#sitesFile);
+      return JSON.parse(text) as Site[];
+    } catch {
+      return [];
+    }
+  }
+
+  async create(name: string): Promise<Site> {
+    const sites = await this.list();
+    const site: Site = {
+      id: crypto.randomUUID(),
+      name,
+      publicToken: `public_${Math.random().toString(36).slice(2, 10)}`,
+      createdAt: new Date().toISOString(),
+    };
+    sites.push(site);
+    await Deno.writeTextFile(this.#sitesFile, JSON.stringify(sites, null, 2));
+    return site;
   }
 
   async #exists(path: string): Promise<boolean> {

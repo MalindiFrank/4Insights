@@ -40,3 +40,19 @@ export interface MetricsOverview {
   totalPageviews: number;
   topPaths: Array<{ path: string; count: number }>;
 }
+
+// Admin and site management types
+export interface Site {
+  id: string; // generated
+  name: string;
+  publicToken: string; // used by tracker
+  createdAt: string;
+}
+
+export interface CreateSiteRequest {
+  name: string;
+}
+
+export interface CreateSiteResponse {
+  site: Site;
+}

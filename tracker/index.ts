@@ -1,4 +1,8 @@
 // tracker/index.ts - InsightTracker TypeScript implementation
+//
+// InsightTracker captures page views in a privacy-friendly way and sends them
+// to the Collector backend. It auto-initializes when loaded via a <script>
+// tag that includes a data-key attribute, and also supports manual creation.
 import type { PageViewEvent, TrackerConfig } from "./types.ts";
 
 export class InsightTracker {
@@ -31,12 +35,16 @@ export class InsightTracker {
   }
 
   private initializeTracker(): void {
+    // Send a pageview on first load
     this.trackPageView();
+    // Track navigation changes for Single Page Apps
     this.setupSPATracking();
+    // Ensure pending data is sent on page unload
     this.setupUnloadTracking();
   }
 
   private trackPageView(): void {
+    // Collect page details and browser info into a typed event
     const event: PageViewEvent = {
       type: "pageview",
       userId: this.userId,
@@ -74,6 +82,7 @@ export class InsightTracker {
   }
 
   private setupSPATracking(): void {
+    // Wrap history APIs to detect client-side route changes
     const originalPushState = history.pushState.bind(history);
     const originalReplaceState = history.replaceState.bind(history);
 

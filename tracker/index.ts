@@ -18,7 +18,7 @@ export class InsightTracker {
   }
 
   private generateId(): string {
-    return "id-" + Math.random().toString(36).substr(2, 9);
+    return "id-" + Math.random().toString(36).substring(2, 9);
   }
 
   private getOrCreateUserId(): string {

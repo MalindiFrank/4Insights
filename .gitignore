@@ -1,3 +1,13 @@
+# Deno / OS / Editor
+.deno/
+.DS_Store
+
+# Node
+node_modules/
+
+# SvelteKit build output
+dashboard/.svelte-kit/
+
 # .gitignore for projects using Node.js, Deno, Svelte (incl. SvelteKit) and Docker
 # Tweak the sections to match your exact tools and build folders.
 

@@ -1,59 +1,97 @@
 <script lang="ts">
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcomeFallback from '$lib/images/svelte-welcome.png';
+  /**
+   * Minimal metrics overview pulling from the collector.
+   * Adjust COLLECTOR_URL to your deployment if different origin.
+   */
+  import { onMount } from 'svelte';
+
+  type TopPath = { path: string; count: number };
+  type MetricsOverview = { totalEvents: number; totalPageviews: number; topPaths: TopPath[] };
+
+  const COLLECTOR_URL = 'http://localhost:8000/4insights/metrics';
+
+  let loading = true;
+  let error: string | null = null;
+  let metrics: MetricsOverview | null = null;
+
+  async function loadMetrics() {
+    loading = true;
+    error = null;
+    try {
+      const res = await fetch(COLLECTOR_URL);
+      if (!res.ok) throw new Error(`Failed to load metrics: ${res.status}`);
+      metrics = await res.json();
+    } catch (e) {
+      error = String(e);
+    } finally {
+      loading = false;
+    }
+  }
+
+  onMount(() => {
+    loadMetrics();
+  });
 </script>
 
-<svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
-</svelte:head>
-
-<section>
-	<h1>
-		<span class="welcome">
-			<picture>
-				<source srcset={welcome} type="image/webp" />
-				<img src={welcomeFallback} alt="Welcome" />
-			</picture>
-		</span>
-
-		to your new<br />SvelteKit app
-	</h1>
-
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
-</section>
-
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
+  /* Minimal, modern, no libraries */
+  .container { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem; background: #fff; }
+  .muted { color: #6b7280; }
+  .title { font-size: 1.5rem; margin: 0 0 1rem; }
+  .table { width: 100%; border-collapse: collapse; }
+  .table th, .table td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #f3f4f6; }
+  .refresh { margin-top: 1rem; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0b0f14; color: #e5e7eb; }
+    .card { background: #0f1720; border-color: #1f2937; }
+    .muted { color: #9ca3af; }
+    .table th, .table td { border-color: #1f2937; }
+  }
 </style>
+
+<div class="container">
+  <h1 class="title">4Insights — Overview</h1>
+  {#if loading}
+    <p class="muted">Loading metrics…</p>
+  {:else if error}
+    <p class="muted">{error}</p>
+  {:else if metrics}
+    <div class="grid">
+      <div class="card">
+        <div class="muted">Total Events</div>
+        <div style="font-size:1.75rem; font-weight:600;">{metrics.totalEvents}</div>
+      </div>
+      <div class="card">
+        <div class="muted">Total Pageviews</div>
+        <div style="font-size:1.75rem; font-weight:600;">{metrics.totalPageviews}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem;">
+      <div class="muted" style="margin-bottom:0.5rem;">Top Paths</div>
+      {#if metrics.topPaths.length === 0}
+        <p class="muted">No data yet.</p>
+      {:else}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Path</th>
+              <th>Views</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each metrics.topPaths as row}
+              <tr>
+                <td>{row.path}</td>
+                <td>{row.count}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+      <button class="refresh" on:click={loadMetrics}>Refresh</button>
+    </div>
+  {/if}
+</div>

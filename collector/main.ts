@@ -3,7 +3,6 @@
 // A tiny, dependency-free HTTP server built with Deno's standard library.
 // It accepts events from the browser tracker, stores them in an append-only
 // NDJSON file, and exposes a simple metrics endpoint for the dashboard.
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { FileEventStore, FileSiteStore } from "./utils/storage.ts";
 import type { CreateSiteRequest } from "./types.ts";
 import { validateEvent } from "./utils/validator.ts";
@@ -83,7 +82,7 @@ function notFound(): Response {
 }
 
 console.log("4Insights Collector running on http://localhost:8000");
-serve((req) => {
+Deno.serve({ port: 8000 }, (req) => {
   const url = new URL(req.url);
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -124,4 +123,4 @@ serve((req) => {
     })();
   }
   return notFound();
-}, { port: 8000 });
+});

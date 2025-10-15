@@ -1,32 +1,5 @@
 // tracker/index.ts - InsightTracker TypeScript implementation
-export interface PageViewEventMetadata {
-  url: string;
-  path: string;
-  host: string;
-  hash: string;
-  query: string;
-  routeParams?: Record<string, string>;
-}
-
-export interface PageViewEvent {
-  type: "pageview";
-  userId: string;
-  sessionId: string;
-  page: string;
-  referrer: string;
-  timestamp: string;
-  userAgent: string;
-  language: string;
-  screen: string;
-  timezone: string;
-  metadata: PageViewEventMetadata;
-}
-
-export interface TrackerConfig {
-  apiKey: string;
-  endpoint?: string;
-  userId?: string;
-}
+import type { PageViewEvent, TrackerConfig } from "./types.ts";
 
 export class InsightTracker {
   private config: TrackerConfig;

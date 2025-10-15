@@ -144,21 +144,10 @@ desktop.ini
 *.key
 *.crt
 
-# -----------------
-# Notes
-# -----------------
-# - Keep lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml, deno.lock) tracked unless you have a reason not to.
-# - If your project produces additional build folders (e.g. `public/build`, `dist/client`, `server/build`) add them explicitly.
-# - Review this file and remove any lines that would ignore files you intentionally want to keep in source control.
-# - To apply changes to files already tracked by Git, run:
-#     git rm -r --cached node_modules .svelte-kit public/build dist build .deno || true
-#     git add .
-#     git commit -m "chore: add .gitignore"
-
 
 # default from scaffold
-
 node_modules
+.marscode
 
 # Output
 .output

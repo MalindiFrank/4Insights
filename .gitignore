@@ -5,6 +5,8 @@
 # Node
 node_modules/
 
+.vscode
+
 # SvelteKit build output
 dashboard/.svelte-kit/
 dashboard/.svelte-kit

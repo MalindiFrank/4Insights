@@ -12,7 +12,7 @@ export class InsightTracker {
 
   constructor(config: TrackerConfig) {
     this.config = config;
-    this.sessionId = this.generateId();
+    this.sessionId = this.getOrCreateUserId();
     this.userId = config.userId || this.getOrCreateUserId();
     this.initializeTracker();
   }

@@ -227,7 +227,79 @@ personal information**.
 
 ---
 ### Repo Layout
-....coming soon
+
+```
+collector/
+  main.ts                 # Deno HTTP server exposing /4insights/collect and /4insights/metrics
+  types.ts                # Shared types for events and metrics
+  utils/
+    storage.ts            # File-based event storage (NDJSON)
+    validator.ts          # Runtime validation for incoming events
+  db/
+    schema.sql            # Placeholder for future DB schema (not used by file store)
+
+tracker/
+  index.ts                # TypeScript tracker (auto-initializes if script tag has data-key)
+  build/tracker.js        # Built tracker bundle (example)
+
+dashboard/                # SvelteKit app (skeleton)
+```
+
+### Collector Endpoints
+
+- `POST /4insights/collect` — Accepts an array of events (e.g., pageviews)
+- `GET /4insights/metrics` — Basic overview metrics (total events, total pageviews, top paths)
+
+Example request body for `/4insights/collect`:
+
+```json
+[
+  {
+    "type": "pageview",
+    "userId": "id-abc",
+    "sessionId": "id-def",
+    "page": "Home",
+    "referrer": "",
+    "timestamp": "2025-10-15T12:00:00.000Z",
+    "userAgent": "Mozilla/5.0 ...",
+    "language": "en-US",
+    "screen": "1366x768",
+    "timezone": "UTC",
+    "metadata": {
+      "url": "http://localhost:5173/",
+      "path": "/",
+      "host": "localhost:5173",
+      "hash": "",
+      "query": "",
+      "routeParams": {}
+    }
+  }
+]
+```
+
+### Tracker Usage
+
+Embed the built tracker and pass your API key:
+
+```html
+<script src="/tracker.js" data-key="123abc" async></script>
+```
+
+Or initialize manually:
+
+```html
+<script>
+  new InsightTracker({ apiKey: '123abc', endpoint: 'http://localhost:8000/4insights/collect' });
+  // For local dev, ensure CORS or load tracker from the same origin as collector
+  // Default endpoint is "/4insights/collect"
+  // The collector exposes metrics at "/4insights/metrics"
+  // Start collector with:
+  //   deno run --allow-net --allow-read --allow-write collector/main.ts
+  // Then open your app and include the script above.
+  // Navigate around to see pageview events recorded.
+  // Query metrics at http://localhost:8000/4insights/metrics
+}</script>
+```
 ---
 
 <!-- ### Roadmap

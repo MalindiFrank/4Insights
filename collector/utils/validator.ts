@@ -1,4 +1,8 @@
 // utils/validator.ts - Runtime validation for incoming events
+//
+// These narrow, explicit validators keep the Collector safe against
+// malformed input. The goal is friendly error messages and predictable
+// processing rather than strict schema tooling.
 import type { AnyEvent, PageViewEvent } from "../types.ts";
 
 export function isIsoTimestamp(value: unknown): boolean {

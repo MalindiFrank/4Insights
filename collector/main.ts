@@ -1,4 +1,8 @@
 // main.ts - Collector HTTP server
+//
+// A tiny, dependency-free HTTP server built with Deno's standard library.
+// It accepts events from the browser tracker, stores them in an append-only
+// NDJSON file, and exposes a simple metrics endpoint for the dashboard.
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { FileEventStore, FileSiteStore } from "./utils/storage.ts";
 import type { CreateSiteRequest } from "./types.ts";
@@ -42,6 +46,7 @@ async function handleCollect(req: Request): Promise<Response> {
         corsHeaders(req.headers.get("origin")),
       );
     }
+    // Validate each event and append to the store
     for (const item of payload) {
       if (!validateEvent(item)) {
         return json(

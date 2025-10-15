@@ -1,4 +1,8 @@
 // utils/storage.ts - Simple file-based append-only storage for events
+//
+// FileEventStore persists events in a newline-delimited JSON file (NDJSON).
+// It's easy to inspect and suitable for small deployments or development.
+// FileSiteStore provides a minimal site registry for admin functionality.
 import { ensureDir } from "https://deno.land/std@0.224.0/fs/ensure_dir.ts";
 import type { AnyEvent, MetricsOverview, Site } from "../types.ts";
 

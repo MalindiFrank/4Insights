@@ -44,7 +44,6 @@
   .table th, .table td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #f3f4f6; }
   .refresh { margin-top: 1rem; }
   @media (prefers-color-scheme: dark) {
-    body { background: #0b0f14; color: #e5e7eb; }
     .card { background: #0f1720; border-color: #1f2937; }
     .muted { color: #9ca3af; }
     .table th, .table td { border-color: #1f2937; }

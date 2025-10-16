@@ -10,6 +10,7 @@ node_modules/
 # SvelteKit build output
 dashboard/.svelte-kit/
 dashboard/.svelte-kit
+.svelte-kit/
 
 # .gitignore for projects using Node.js, Deno, Svelte (incl. SvelteKit) and Docker
 # Tweak the sections to match your exact tools and build folders.

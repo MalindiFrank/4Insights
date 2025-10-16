@@ -12,24 +12,6 @@ and lightweight.
 
 ---
 
-### Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Architecture](#architecture)
-4. [Getting Started](#getting-started)
-
-   - [Prerequisites](#prerequisites)
-   - [Installation](#installation)
-5. [Usage](#usage)
-
-   - [Embedding the Tracker](#embedding-the-tracker)
-   - [Viewing Analytics](#viewing-analytics)
-6. [Event Types & Payloads](#event-types--payloads)
-7. [Database Structure](#database-structure)
-
----
-
 ### Project Overview
 
 4Insights provides website owners with a simple way to collect and visualize

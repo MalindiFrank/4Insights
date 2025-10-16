@@ -282,6 +282,63 @@ Or initialize manually:
   // Query metrics at http://localhost:8000/4insights/metrics
 }</script>
 ```
+### How to Run (Quick Start)
+
+1) Start the Collector (Deno 2):
+
+```bash
+deno run --allow-net --allow-read --allow-write collector/main.ts
+```
+
+The collector listens on `http://localhost:8000` and exposes:
+- `POST /4insights/collect` (and `/4insights/batch`) to receive events
+- `GET /4insights/metrics` for aggregated metrics
+- `POST /4insights/admin/sites` to create a site (name in JSON)
+
+2) Run the Dashboard (SvelteKit):
+
+```bash
+cd dashboard
+npm install
+npm run dev
+# open http://localhost:5173
+```
+
+The homepage fetches metrics from `http://localhost:8000/4insights/metrics`.
+
+3) Use the Tracker on a web page:
+
+Option A (auto-init via script tag):
+
+```html
+<script src="/tracker.js" data-key="public_demo" async></script>
+```
+
+Option B (manual init in your app):
+
+```html
+<script type="module">
+  import { InsightTracker } from '/path/to/tracker/index.ts';
+  new InsightTracker({ apiKey: 'public_demo', endpoint: 'http://localhost:8000/4insights/collect' });
+</script>
+```
+
+Note: The provided `tracker/build/tracker.js` is a ready-to-use browser bundle snapshot. You may also bundle `tracker/index.ts` yourself using your preferred build tool.
+
+### Developer Workflow (Project Requirements)
+
+- Keep interfaces and types in a dedicated `types.ts` within each directory.
+- Add clear, beginner-friendly docstrings and comments.
+- Commit in small, descriptive chunks after each functional change.
+- Always run formatting, type-checks, and builds after changes:
+
+```bash
+# Format and Deno type-check (collector)
+deno fmt && deno check collector/main.ts collector/utils/storage.ts collector/utils/validator.ts collector/types.ts
+
+# Dashboard check/build
+cd dashboard && npm run check && npm run build
+```
 ---
 
 <!-- ### Roadmap

@@ -3,10 +3,9 @@
  * Run with: deno run --allow-net --allow-env auth.test.ts
  */
 
-import { AuthServer } from '../main.ts';
 
 async function testAuthFlow() {
-  console.log('🧪 Testing Authentication Flow...\n');
+  console.log(' Testing Authentication Flow...\n');
 
   const baseUrl = 'http://localhost:8001';
 
@@ -15,7 +14,7 @@ async function testAuthFlow() {
     console.log('1. Testing health check...');
     const healthResponse = await fetch(`${baseUrl}/health`);
     const healthData = await healthResponse.json();
-    console.log('✅ Health check:', healthData.status);
+    console.log(' Health check:', healthData.status);
     console.log('');
 
     // Test 2: Generate credentials
@@ -25,7 +24,7 @@ async function testAuthFlow() {
       headers: { 'Content-Type': 'application/json' }
     });
     const credData = await credResponse.json();
-    console.log('✅ Credentials generated:', {
+    console.log(' Credentials generated:', {
       apiKey: credData.data.apiKey,
       passphrase: credData.data.passphrase
     });
@@ -42,7 +41,7 @@ async function testAuthFlow() {
       })
     });
     const sessionData = await sessionResponse.json();
-    console.log('✅ Session created:', {
+    console.log(' Session created:', {
       token: sessionData.data.token.substring(0, 20) + '...',
       expiresIn: sessionData.data.expiresIn
     });
@@ -54,7 +53,7 @@ async function testAuthFlow() {
       headers: { 'Authorization': `Bearer ${sessionData.data.token}` }
     });
     const verifyData = await verifyResponse.json();
-    console.log('✅ Token verified:', {
+    console.log(' Token verified:', {
       apiKey: verifyData.data.apiKey,
       valid: verifyData.data.valid
     });
@@ -67,14 +66,14 @@ async function testAuthFlow() {
       headers: { 'Authorization': `Bearer ${sessionData.data.token}` }
     });
     const logoutData = await logoutResponse.json();
-    console.log('✅ Logout successful:', logoutData.message);
+    console.log(' Logout successful:', logoutData.message);
     console.log('');
 
-    console.log('🎉 All tests passed! Authentication system is working correctly.');
+    console.log(' All tests passed! Authentication system is working correctly.');
 
   } catch (error) {
-    console.error('❌ Test failed:', error);
-    console.log('\n💡 Make sure the auth server is running:');
+    console.error(' Test failed:', error);
+    console.log('\n Make sure the auth server is running:');
     console.log('   deno run --allow-net --allow-env main.ts');
   }
 }

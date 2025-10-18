@@ -1,38 +1,114 @@
-# sv
+# 4Insights Dashboard
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A SvelteKit-based dashboard for the 4Insights analytics platform. This dashboard provides a clean, modern interface for viewing analytics data collected by the 4Insights tracker and processed by the Collector API.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Real-time Metrics**: Displays total events, pageviews, and top paths
+- **Clean Interface**: Minimal, modern design without external styling libraries
+- **Responsive Layout**: Works on desktop and mobile devices
+- **Auto-refresh**: Manual refresh capability for updated metrics
+- **Dark Mode Support**: Automatic dark mode detection and styling
 
-```sh
-# create a new project in the current directory
-npx sv create
+## Architecture
 
-# create a new project in my-app
-npx sv create my-app
+The dashboard is built with:
+- **SvelteKit**: Modern web framework for the frontend
+- **TypeScript**: Type-safe development
+- **Native CSS**: No external styling dependencies
+- **Fetch API**: Direct communication with the Collector API
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js (for npm)
+- 4Insights Collector running on `http://localhost:8000`
+
+### Installation
+
+1. Install dependencies:
+
+```bash
+npm install
 ```
 
-## Developing
+2. Start the development server:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+3. Open your browser to `http://localhost:5173`
 
-To create a production version of your app:
+### Building for Production
 
-```sh
+```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+Preview the production build:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+npm run preview
+```
+
+## Configuration
+
+The dashboard connects to the Collector API at `http://localhost:8000/4insights/metrics` by default. To change this:
+
+1. Edit `src/routes/+page.svelte`
+2. Update the `COLLECTOR_URL` constant:
+
+```typescript
+const COLLECTOR_URL = 'http://your-collector-url:port/4insights/metrics';
+```
+
+## Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run check` - Run type checking
+- `npm run check:watch` - Run type checking in watch mode
+
+### Project Structure
+
+```
+src/
+├── routes/
+│   ├── +page.svelte        # Main dashboard page
+│   ├── +layout.svelte      # App layout wrapper
+│   ├── about/              # About page
+│   └── sverdle/            # Demo game (SvelteKit example)
+├── lib/                    # Shared components and utilities
+└── app.html               # HTML template
+```
+
+## Integration
+
+The dashboard automatically fetches metrics from the Collector API and displays:
+
+- **Total Events**: Count of all tracked events
+- **Total Pageviews**: Count of pageview events specifically
+- **Top Paths**: Most visited pages with view counts
+
+## Styling
+
+The dashboard uses a minimal, modern design with:
+- CSS Grid for responsive layouts
+- CSS Custom Properties for theming
+- Automatic dark mode detection
+- No external styling dependencies
+
+## Deployment
+
+To deploy the dashboard:
+
+1. Build the project: `npm run build`
+2. Deploy the `build/` directory to your hosting provider
+3. Ensure the Collector API is accessible from your deployment
+
+For SvelteKit-specific deployment options, see the [SvelteKit adapters documentation](https://svelte.dev/docs/kit/adapters).

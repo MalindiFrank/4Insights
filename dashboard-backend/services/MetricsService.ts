@@ -12,9 +12,10 @@ export class MetricsService {
     this.#collectorUrl = `${config.collectorBaseUrl}/4insights/metrics`;
   }
 
-  async fetchOverview(_apiKey: string): Promise<MetricsOverview> {
-    // Future: include apiKey filtering once collector supports it
-    const res = await fetch(this.#collectorUrl);
+  async fetchOverview(apiKey: string): Promise<MetricsOverview> {
+    const res = await fetch(this.#collectorUrl, {
+      headers: apiKey ? { "x-api-key": apiKey } : undefined,
+    });
     if (!res.ok) {
       throw new Error(`Collector request failed: ${res.status}`);
     }

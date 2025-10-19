@@ -1,16 +1,19 @@
 /**
  * In-memory storage implementation for credentials
- * 
+ *
  * Responsibilities:
  * - Store credentials temporarily in memory
  * - Validate API key and passphrase combinations
  * - Handle credential expiration
  * - Clean up expired credentials
- * 
+ *
  * This is a temporary solution until database integration
  */
 
-import { CredentialData, CredentialStorage } from '../../../shared/interfaces/types.ts';
+import {
+  CredentialData,
+  CredentialStorage,
+} from "../../../shared/interfaces/types.ts";
 
 export class InMemoryCredentialStorage implements CredentialStorage {
   private credentials: Map<string, CredentialData> = new Map();

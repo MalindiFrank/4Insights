@@ -1,6 +1,6 @@
 /**
  * Main HTTP server for demo authentication system using Deno standard library
- * 
+ *
  * Routes:
  * - POST /demo/credentials - Generate new credentials
  * - POST /demo/sessions - Create session (login)
@@ -9,11 +9,11 @@
  * - GET /health - Health check
  */
 
-import { CredentialService } from './CredentialService.ts';
-import { SessionService } from './SessionService.ts';
-import { AuthMiddleware } from './AuthMiddleware.ts';
-import { Config } from './utils/Config.ts';
-import { InMemoryCredentialStorage } from './utils/InMemoryCredentialStorage.ts';
+import { CredentialService } from "./CredentialService.ts";
+import { SessionService } from "./SessionService.ts";
+import { AuthMiddleware } from "./AuthMiddleware.ts";
+import { Config } from "./utils/Config.ts";
+import { InMemoryCredentialStorage } from "./utils/InMemoryCredentialStorage.ts";
 
 class AuthServer {
   private credentialService!: CredentialService;
@@ -43,42 +43,42 @@ class AuthServer {
 
     // Add CORS headers
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
     // Handle preflight requests
-    if (method === 'OPTIONS') {
+    if (method === "OPTIONS") {
       return new Response(null, { status: 200, headers: corsHeaders });
     }
 
     try {
       // Route handling
-      if (path === '/health' && method === 'GET') {
+      if (path === "/health" && method === "GET") {
         return this.handleHealthCheck();
-      } else if (path === '/demo/credentials' && method === 'POST') {
+      } else if (path === "/demo/credentials" && method === "POST") {
         return await this.handleGenerateCredentials();
-      } else if (path === '/demo/sessions' && method === 'POST') {
+      } else if (path === "/demo/sessions" && method === "POST") {
         return await this.handleCreateSession(req);
-      } else if (path === '/demo/verify' && method === 'GET') {
+      } else if (path === "/demo/verify" && method === "GET") {
         return await this.handleVerifyToken(req);
-      } else if (path === '/demo/sessions' && method === 'DELETE') {
+      } else if (path === "/demo/sessions" && method === "DELETE") {
         return await this.handleLogout(req);
       } else {
-        return AuthMiddleware.createErrorResponse('Route not found', 404);
+        return AuthMiddleware.createErrorResponse("Route not found", 404);
       }
     } catch (error) {
-      console.error('Request handling error:', error);
-      return AuthMiddleware.createErrorResponse('Internal server error', 500);
+      console.error("Request handling error:", error);
+      return AuthMiddleware.createErrorResponse("Internal server error", 500);
     }
   }
 
   private handleHealthCheck(): Response {
     const data = {
-      status: 'healthy',
+      status: "healthy",
       timestamp: new Date().toISOString(),
-      activeSessions: this.sessionService.getActiveSessionsCount()
+      activeSessions: this.sessionService.getActiveSessionsCount(),
     };
     return AuthMiddleware.createSuccessResponse(data);
   }
@@ -86,10 +86,16 @@ class AuthServer {
   private async handleGenerateCredentials(): Promise<Response> {
     try {
       const credentials = await this.credentialService.generateCredentials();
-      return AuthMiddleware.createSuccessResponse(credentials, 'Credentials generated successfully');
+      return AuthMiddleware.createSuccessResponse(
+        credentials,
+        "Credentials generated successfully",
+      );
     } catch (error) {
-      console.error(error)
-      return AuthMiddleware.createErrorResponse('Failed to generate credentials', 500);
+      console.error(error);
+      return AuthMiddleware.createErrorResponse(
+        "Failed to generate credentials",
+        500,
+      );
     }
   }
 
@@ -99,61 +105,80 @@ class AuthServer {
       const { apiKey, passphrase } = body;
 
       if (!apiKey || !passphrase) {
-        return AuthMiddleware.createErrorResponse('API key and passphrase are required', 400);
+        return AuthMiddleware.createErrorResponse(
+          "API key and passphrase are required",
+          400,
+        );
       }
 
-      const isValid = await this.credentialService.validateCredentials(apiKey, passphrase);
+      const isValid = await this.credentialService.validateCredentials(
+        apiKey,
+        passphrase,
+      );
       if (!isValid) {
-        return AuthMiddleware.createErrorResponse('Invalid credentials', 401);
+        return AuthMiddleware.createErrorResponse("Invalid credentials", 401);
       }
 
       const token = await this.sessionService.generateToken(apiKey);
       const data = {
         token,
-        expiresIn: this.config.tokenExpiryMinutes
+        expiresIn: this.config.tokenExpiryMinutes,
       };
-      return AuthMiddleware.createSuccessResponse(data, 'Session created successfully');
+      return AuthMiddleware.createSuccessResponse(
+        data,
+        "Session created successfully",
+      );
     } catch (error) {
-      console.error(error)
-      return AuthMiddleware.createErrorResponse('Failed to create session', 500);
+      console.error(error);
+      return AuthMiddleware.createErrorResponse(
+        "Failed to create session",
+        500,
+      );
     }
   }
 
   private async handleVerifyToken(req: Request): Promise<Response> {
     const authResult = await this.authMiddleware.requireAuth(req);
-    
+
     if (!authResult.apiKey) {
-      return AuthMiddleware.handleAuthError(authResult.error || 'Authentication required');
+      return AuthMiddleware.handleAuthError(
+        authResult.error || "Authentication required",
+      );
     }
 
     const data = {
       apiKey: authResult.apiKey,
-      valid: true
+      valid: true,
     };
-    return AuthMiddleware.createSuccessResponse(data, 'Token is valid');
+    return AuthMiddleware.createSuccessResponse(data, "Token is valid");
   }
 
   private async handleLogout(req: Request): Promise<Response> {
     const authResult = await this.authMiddleware.requireAuth(req);
-    
+
     if (!authResult.apiKey) {
-      return AuthMiddleware.handleAuthError(authResult.error || 'Authentication required');
+      return AuthMiddleware.handleAuthError(
+        authResult.error || "Authentication required",
+      );
     }
 
-    const token = req.headers.get('authorization')?.substring(7);
+    const token = req.headers.get("authorization")?.substring(7);
     if (token) {
       this.sessionService.invalidateToken(token);
     }
 
-    return AuthMiddleware.createSuccessResponse(null, 'Session terminated successfully');
+    return AuthMiddleware.createSuccessResponse(
+      null,
+      "Session terminated successfully",
+    );
   }
 
   public start(): void {
     const port = this.config.demoAuthPort;
     const handler = (req: Request) => this.handleRequest(req);
-    
-    Deno.serve({ port, hostname: '0.0.0.0' }, handler);
-    
+
+    Deno.serve({ port, hostname: "0.0.0.0" }, handler);
+
     console.log(` Demo Auth Server running on port ${port}`);
     console.log(` Available routes:`);
     console.log(`   POST /demo/credentials - Generate new credentials`);
@@ -175,13 +200,13 @@ if (import.meta.main) {
   server.start();
 
   // Graceful shutdown
-  Deno.addSignalListener('SIGINT', () => {
-    console.log('\n Shutting down server...');
+  Deno.addSignalListener("SIGINT", () => {
+    console.log("\n Shutting down server...");
     server.stop();
   });
 
-  Deno.addSignalListener('SIGTERM', () => {
-    console.log('\n Shutting down server...');
+  Deno.addSignalListener("SIGTERM", () => {
+    console.log("\n Shutting down server...");
     server.stop();
   });
 }

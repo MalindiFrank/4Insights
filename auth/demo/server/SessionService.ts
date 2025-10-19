@@ -1,6 +1,6 @@
 /**
  * SessionService - Handles token generation and session management
- * 
+ *
  * Responsibilities:
  * - Generate HMAC-signed tokens
  * - Verify token validity and extract API key
@@ -9,7 +9,7 @@
  */
 
 // Using Deno's built-in crypto API
-import { SessionData, AuthConfig } from '../../shared/interfaces/types.ts';
+import { AuthConfig, SessionData } from "../../shared/interfaces/types.ts";
 
 export class SessionService {
   private config: AuthConfig;
@@ -25,21 +25,23 @@ export class SessionService {
    */
   async generateToken(apiKey: string): Promise<string> {
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + this.config.tokenExpiryMinutes * 60 * 1000);
-    
+    const expiresAt = new Date(
+      now.getTime() + this.config.tokenExpiryMinutes * 60 * 1000,
+    );
+
     const payload = {
       apiKey,
       issuedAt: now.getTime(),
-      expiresAt: expiresAt.getTime()
+      expiresAt: expiresAt.getTime(),
     };
 
     const token = await this.createSignedToken(payload);
-    
+
     const sessionData: SessionData = {
       token,
       apiKey,
       createdAt: now,
-      expiresAt
+      expiresAt,
     };
 
     this.activeSessions.set(token, sessionData);
@@ -49,30 +51,32 @@ export class SessionService {
   /**
    * Verify token and return validation result with API key
    */
-  async verifyToken(token: string): Promise<{ valid: boolean; apiKey?: string; error?: string }> {
+  async verifyToken(
+    token: string,
+  ): Promise<{ valid: boolean; apiKey?: string; error?: string }> {
     try {
       // Check if token exists in active sessions
       const session = this.activeSessions.get(token);
       if (!session) {
-        return { valid: false, error: 'Token not found' };
+        return { valid: false, error: "Token not found" };
       }
 
       // Check if token is expired
       if (new Date() > session.expiresAt) {
         this.activeSessions.delete(token);
-        return { valid: false, error: 'Token expired' };
+        return { valid: false, error: "Token expired" };
       }
 
       // Verify token signature
       const isValidSignature = await this.verifyTokenSignature(token);
       if (!isValidSignature) {
         this.activeSessions.delete(token);
-        return { valid: false, error: 'Invalid token signature' };
+        return { valid: false, error: "Invalid token signature" };
       }
 
       return { valid: true, apiKey: session.apiKey };
     } catch (_error) {
-      return { valid: false, error: 'Token verification failed' };
+      return { valid: false, error: "Token verification failed" };
     }
   }
 
@@ -101,28 +105,37 @@ export class SessionService {
   /**
    * Create HMAC-signed token using Deno's crypto API
    */
-  private async createSignedToken(payload: Record<string, unknown>): Promise<string> {
+  private async createSignedToken(
+    payload: Record<string, unknown>,
+  ): Promise<string> {
     const payloadString = JSON.stringify(payload);
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
-      'raw',
+      "raw",
       encoder.encode(this.config.hmacSecret),
-      { name: 'HMAC', hash: 'SHA-256' },
+      { name: "HMAC", hash: "SHA-256" },
       false,
-      ['sign']
+      ["sign"],
     );
-    
-    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payloadString));
+
+    const signature = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(payloadString),
+    );
     const signatureHex = Array.from(new Uint8Array(signature))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
-    
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
     const tokenData = {
       payload: payloadString,
-      signature: signatureHex
+      signature: signatureHex,
     };
 
-    return btoa(JSON.stringify(tokenData)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return btoa(JSON.stringify(tokenData)).replace(/\+/g, "-").replace(
+      /\//g,
+      "_",
+    ).replace(/=/g, "");
   }
 
   /**
@@ -131,24 +144,28 @@ export class SessionService {
   private async verifyTokenSignature(token: string): Promise<boolean> {
     try {
       // Decode base64url
-      const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-      const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
+      const base64 = token.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
       const tokenData = JSON.parse(atob(padded));
       const { payload, signature } = tokenData;
 
       const encoder = new TextEncoder();
       const key = await crypto.subtle.importKey(
-        'raw',
+        "raw",
         encoder.encode(this.config.hmacSecret),
-        { name: 'HMAC', hash: 'SHA-256' },
+        { name: "HMAC", hash: "SHA-256" },
         false,
-        ['sign']
+        ["sign"],
       );
 
-      const expectedSignature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+      const expectedSignature = await crypto.subtle.sign(
+        "HMAC",
+        key,
+        encoder.encode(payload),
+      );
       const expectedHex = Array.from(new Uint8Array(expectedSignature))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
 
       // Simple string comparison (in production, use timing-safe comparison)
       return signature === expectedHex;

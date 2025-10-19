@@ -119,7 +119,7 @@ cd 4Insights
 2. Install dependencies for the dashboard:
 
 ```bash
-cd dashboard
+cd dashboard/frontend
 npm install
 ```
 
@@ -133,7 +133,7 @@ deno run --allow-net --allow-read --allow-write main.ts
 4. Start the Dashboard Backend (BFF):
 
 ```bash
-cd ../dashboard-backend
+cd ../dashboard/backend
 DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
   COLLECTOR_BASE_URL=http://localhost:8000 \
   deno run --allow-net --allow-env main.ts
@@ -142,7 +142,7 @@ DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
 5. Run the SvelteKit dashboard:
 
 ```bash
-cd ../dashboard
+cd ../dashboard/frontend
 npm run prepare ( Optional )
 npm run dev
 ```

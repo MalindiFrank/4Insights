@@ -1,14 +1,14 @@
 <script lang="ts">
   /**
-   * Minimal metrics overview pulling from the collector.
-   * Adjust COLLECTOR_URL to your deployment if different origin.
+  * Minimal metrics overview pulling from the dashboard backend (BFF).
+  * Adjust BACKEND_URL to your deployment if different origin.
    */
   import { onMount } from 'svelte';
 
   type TopPath = { path: string; count: number };
   type MetricsOverview = { totalEvents: number; totalPageviews: number; topPaths: TopPath[] };
 
-  const COLLECTOR_URL = 'http://localhost:8000/4insights/metrics';
+  const BACKEND_URL = 'http://localhost:8010/dashboard/metrics';
 
   let loading = true;
   let error: string | null = null;
@@ -18,7 +18,10 @@
     loading = true;
     error = null;
     try {
-      const res = await fetch(COLLECTOR_URL);
+      const token = localStorage.getItem('auth_token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(BACKEND_URL, { headers });
       if (!res.ok) throw new Error(`Failed to load metrics: ${res.status}`);
       metrics = await res.json();
     } catch (e) {

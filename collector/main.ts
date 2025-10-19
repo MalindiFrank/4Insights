@@ -55,8 +55,9 @@ async function handleCollect(req: Request): Promise<Response> {
         );
       }
     }
+    const apiKey = req.headers.get("x-api-key") ?? undefined;
     for (const item of payload) {
-      await store.append(item);
+      await store.append(item, apiKey);
     }
     return json(
       { ok: true, received: payload.length },
@@ -73,7 +74,8 @@ async function handleCollect(req: Request): Promise<Response> {
 }
 
 async function handleMetrics(req: Request): Promise<Response> {
-  const overview = await store.overview();
+  const apiKey = req.headers.get("x-api-key") ?? undefined;
+  const overview = await store.overview(apiKey);
   return json(overview, 200, corsHeaders(req.headers.get("origin")));
 }
 

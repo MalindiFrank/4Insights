@@ -5,6 +5,8 @@
 // FileSiteStore provides a minimal site registry for admin functionality.
 import type { AnyEvent, MetricsOverview, Site } from "../types.ts";
 
+type StoredEvent = AnyEvent & { _apiKey?: string };
+
 export class FileEventStore {
   #dir: string;
   #eventsFile: string;
@@ -22,12 +24,13 @@ export class FileEventStore {
     }
   }
 
-  async append(event: AnyEvent): Promise<void> {
-    const line = JSON.stringify(event) + "\n";
+  async append(event: AnyEvent, apiKey?: string): Promise<void> {
+    const enriched: StoredEvent = apiKey ? { ...(event as any), _apiKey: apiKey } : (event as any);
+    const line = JSON.stringify(enriched) + "\n";
     await Deno.writeTextFile(this.#eventsFile, line, { append: true });
   }
 
-  async readAll(): Promise<AnyEvent[]> {
+  async readAll(): Promise<StoredEvent[]> {
     try {
       const text = await Deno.readTextFile(this.#eventsFile);
       const lines = text.split("\n").filter((l) => l.trim().length > 0);
@@ -39,10 +42,12 @@ export class FileEventStore {
 
   async metricsTopPaths(
     limit = 10,
+    apiKey?: string,
   ): Promise<Array<{ path: string; count: number }>> {
     const events = await this.readAll();
     const counts = new Map<string, number>();
     for (const e of events) {
+      if (apiKey && (e as any)._apiKey !== apiKey) continue;
       // Only pageviews for now
       const path = (e as any).metadata?.path ?? "";
       if (!path) continue;
@@ -56,12 +61,12 @@ export class FileEventStore {
     return entries.slice(0, limit);
   }
 
-  async overview(): Promise<MetricsOverview> {
+  async overview(apiKey?: string): Promise<MetricsOverview> {
     const events = await this.readAll();
-    const totalEvents = events.length;
-    const totalPageviews =
-      events.filter((e) => (e as any).type === "pageview").length;
-    const topPaths = await this.metricsTopPaths();
+    const filtered = apiKey ? events.filter((e) => (e as any)._apiKey === apiKey) : events;
+    const totalEvents = filtered.length;
+    const totalPageviews = filtered.filter((e) => (e as any).type === "pageview").length;
+    const topPaths = await this.metricsTopPaths(10, apiKey);
     return { totalEvents, totalPageviews, topPaths };
   }
 

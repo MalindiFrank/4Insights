@@ -40,7 +40,8 @@ Core goals:
 - ✅ Site management via admin endpoints.
 - ✅ Demo authentication system with API keys and sessions.
 - ✅ Privacy-first: no cookies, no personal data collection.
-- ✅ Comprehensive metadata collection (user agent, screen size, timezone, etc.).
+- ✅ Comprehensive metadata collection (user agent, screen size, timezone,
+  etc.).
 
 **Future Features:**
 
@@ -63,26 +64,31 @@ Core goals:
 
    - A small TypeScript/JavaScript snippet embedded into websites.
    - Sends pageview events to the Collector API with comprehensive metadata.
-   - Uses `sendBeacon` for reliable delivery and supports Single Page Applications (SPAs).
+   - Uses `sendBeacon` for reliable delivery and supports Single Page
+     Applications (SPAs).
    - Auto-initializes when loaded via script tag with `data-key` attribute.
 
 2. **Collector API**
 
    - A backend service built with Deno 2 using native APIs.
    - Receives event payloads, validates them, and stores them in NDJSON files.
-   - Provides endpoints for event collection, metrics aggregation, and site management.
+   - Provides endpoints for event collection, metrics aggregation, and site
+     management.
    - Includes CORS support and file-based storage for development.
 
 3. **Dashboard**
 
    - A SvelteKit application for viewing analytics data.
-   - Fetches aggregated metrics from the Collector API and displays them in a clean interface.
-   - Shows total events, pageviews, and top paths with real-time refresh capability.
+   - Fetches aggregated metrics from the Collector API and displays them in a
+     clean interface.
+   - Shows total events, pageviews, and top paths with real-time refresh
+     capability.
 
 4. **Authentication System (Demo)**
 
    - A lightweight authentication system built with Deno's standard library.
-   - Provides API key generation, session management, and token-based authentication.
+   - Provides API key generation, session management, and token-based
+     authentication.
    - Includes in-memory storage with automatic cleanup and CORS support.
    - Ready for integration with the main analytics system.
 
@@ -142,8 +148,9 @@ http://localhost:5173
 
 #### Embedding the Tracker
 
-After creating a site in the dashboard, you will receive a **public site
-token**. Embed the following snippet in your website:
+After recieving login credentials from the 4Insights dashboard website, you will
+receive a **public site token** i.e `public_abc123`. Embed the following snippet
+in your website (entry `html` file / component):
 
 ```html
 <script
@@ -153,8 +160,8 @@ token**. Embed the following snippet in your website:
 ></script>
 ```
 
-The tracker will automatically send pageview events to your Collector API. No
-configuration is required unless you want to track additional events like clicks
+The `tracker` will `automatically send` pageview events to your Collector API. `No
+configuration` is required unless you want to track additional events like clicks
 or custom interactions.
 
 #### Viewing Analytics
@@ -164,7 +171,7 @@ or custom interactions.
 3. The dashboard will automatically display:
 
    - Total events count
-   - Total pageviews count  
+   - Total pageviews count
    - Top paths with view counts
 4. Use the refresh button to get updated metrics.
 
@@ -178,7 +185,7 @@ The tracker currently supports pageview events with the following structure:
 {
   "type": "pageview",
   "userId": "id-abc123",
-  "sessionId": "id-def456", 
+  "sessionId": "id-def456",
   "page": "Home Page",
   "referrer": "https://google.com",
   "timestamp": "2025-01-15T12:00:00.000Z",
@@ -225,6 +232,7 @@ The system currently uses file-based storage for development:
 When migrated to a database, the structure will include:
 
 **Sites Table**
+
 - `id` – Primary key
 - `name` – Name of the website
 - `public_token` – Token used by tracker
@@ -232,6 +240,7 @@ When migrated to a database, the structure will include:
 - `created_at` – Timestamp
 
 **Events Table**
+
 - `id` – Primary key
 - `site_id` – Foreign key to site
 - `type` – Event type
@@ -436,7 +445,7 @@ Note: The provided `tracker/build/tracker.js` is a ready-to-use browser bundle s
 
 ```bash
 # Format and Deno type-check (collector)
-deno fmt && deno check collector/main.ts collector/utils/storage.ts collector/utils/validator.ts collector/types.ts
+deno fmt && deno check collector/ tracker/ auth/
 
 # Dashboard check/build
 cd dashboard && npm run check && npm run build
@@ -468,12 +477,12 @@ cd dashboard && npm run check && npm run build
 
 ### Contributing
 
-Contributions are welcome! Please follow these steps:
+Contributions are encouraged! Please follow these steps:
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature-name`)
-3. Commit your changes (`git commit -m "Add feature"`)
-4. Push to your branch (`git push origin feature-name`)
+2. Create a feature branch (`git checkout -b feature-name-here`)
+3. Commit your changes (`git commit -m "Add a descriptive msg here"`)
+4. Push to your branch (`git push origin feature-name-here`)
 5. Create a pull request
 
 Please respect the **privacy-first principles** when adding features.
@@ -482,7 +491,7 @@ Please respect the **privacy-first principles** when adding features.
 
 ### License
 
-This project is open source and available under the **MIT License**. You may
-use, modify, and distribute it freely, while maintaining attribution.
+This project is semi-open source and available under the **MIT License**. You
+may use, modify, and distribute it freely, while maintaining attribution.
 
 ---

@@ -1,12 +1,16 @@
 # Demo Authentication System
 
-A lightweight authentication system built with Deno's standard library for the 4Insights project.
+A lightweight authentication system built with Deno's standard library for the
+4Insights project.
 
 ## Features
 
-- **API Key Generation**: Creates unique API keys with format `4insights_` + 12 random characters
-- **Passphrase Authentication**: 4-word passphrases for secure credential validation
-- **HMAC Token System**: Cryptographically signed tokens with 25-minute expiration
+- **API Key Generation**: Creates unique API keys with format `4insights_` + 12
+  random characters
+- **Passphrase Authentication**: 4-word passphrases for secure credential
+  validation
+- **HMAC Token System**: Cryptographically signed tokens with 25-minute
+  expiration
 - **Session Management**: Automatic cleanup of expired sessions and credentials
 - **CORS Support**: Built-in CORS headers for web client integration
 
@@ -19,9 +23,10 @@ Tracker → Collector (stores with API key) → Dashboard Backend (filters by AP
 ### Core Services
 
 - **CredentialService**: API key generation, credential management, storage
-- **SessionService**: Token generation, validation, session management  
+- **SessionService**: Token generation, validation, session management
 - **AuthMiddleware**: HTTP middleware for authentication
-- **InMemoryCredentialStorage**: Temporary storage (ready for database integration)
+- **InMemoryCredentialStorage**: Temporary storage (ready for database
+  integration)
 
 ## Quick Start
 
@@ -32,7 +37,8 @@ cd auth/demo/server
 deno run --allow-net --allow-env main.ts
 ```
 
-The server will start on port 8001 (configurable via `DEMO_AUTH_PORT` environment variable).
+The server will start on port 8001 (configurable via `DEMO_AUTH_PORT`
+environment variable).
 
 ### 2. Test the System
 
@@ -43,11 +49,13 @@ deno run --allow-net --allow-env tests/auth.test.ts
 ## API Endpoints
 
 ### Generate Credentials
+
 ```http
 POST /demo/credentials
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -61,6 +69,7 @@ POST /demo/credentials
 ```
 
 ### Create Session (Login)
+
 ```http
 POST /demo/sessions
 Content-Type: application/json
@@ -72,6 +81,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -84,12 +94,14 @@ Content-Type: application/json
 ```
 
 ### Verify Token
+
 ```http
 GET /demo/verify
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -102,12 +114,14 @@ Authorization: Bearer <token>
 ```
 
 ### Logout
+
 ```http
 DELETE /demo/sessions
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -116,11 +130,13 @@ Authorization: Bearer <token>
 ```
 
 ### Health Check
+
 ```http
 GET /health
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -148,7 +164,8 @@ TOKEN_EXPIRY_MINUTES=25                # Token expiration (minutes)
 
 - **HMAC Signing**: All tokens are cryptographically signed
 - **Short Expiration**: Tokens expire in 25 minutes, credentials in 1 hour
-- **Automatic Cleanup**: Expired sessions and credentials are automatically removed
+- **Automatic Cleanup**: Expired sessions and credentials are automatically
+  removed
 - **API Key Isolation**: Each API key only accesses its own data
 
 ## Integration with Dashboard Backend
@@ -165,13 +182,13 @@ The authentication system is designed to work with the dashboard backend:
 // In the dashboard backend
 const authResult = await authMiddleware.requireAuth(request);
 if (!authResult.apiKey) {
-  return new Response('Unauthorized', { status: 401 });
+  return new Response("Unauthorized", { status: 401 });
 }
 
 // Query database with API key filter
 const userData = await database.query(
-  'SELECT * FROM events WHERE api_key = ?',
-  [authResult.apiKey]
+  "SELECT * FROM events WHERE api_key = ?",
+  [authResult.apiKey],
 );
 ```
 
@@ -205,10 +222,10 @@ auth/shared/interfaces/
 ## Development
 
 The system is built with:
+
 - **Deno Standard Library**: No external dependencies
 - **TypeScript**: Full type safety
 - **OOP Architecture**: Clean separation of concerns
 - **Interface-based Design**: Easy to extend and test
 
-Requests:
-  All files are kept under 249 lines, with clear documentation.
+Requests: All files are kept under 249 lines, with clear documentation.

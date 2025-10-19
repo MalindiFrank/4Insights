@@ -79,8 +79,7 @@ Core goals:
 3. **Dashboard**
 
    - A SvelteKit application for viewing analytics data.
-   - Fetches aggregated metrics from the Collector API and displays them in a
-     clean interface.
+   - Communicates only with the Dashboard Backend (BFF).
    - Shows total events, pageviews, and top paths with real-time refresh
      capability.
 
@@ -92,8 +91,11 @@ Core goals:
    - Includes in-memory storage with automatic cleanup and CORS support.
    - Ready for integration with the main analytics system.
 
-The system is modular, meaning each component can be extended or replaced
-independently as needed.
+The system follows a BFF architecture:
+
+```
+Tracker → Collector (stores with API key) → Dashboard Backend (validates token, forwards x-api-key) → Dashboard Client
+```
 
 ---
 
@@ -128,7 +130,16 @@ cd ../collector
 deno run --allow-net --allow-read --allow-write main.ts
 ```
 
-4. Run the SvelteKit dashboard:
+4. Start the Dashboard Backend (BFF):
+
+```bash
+cd ../dashboard-backend
+DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
+  COLLECTOR_BASE_URL=http://localhost:8000 \
+  deno run --allow-net --allow-env main.ts
+```
+
+5. Run the SvelteKit dashboard:
 
 ```bash
 cd ../dashboard
@@ -136,7 +147,7 @@ npm run prepare ( Optional )
 npm run dev
 ```
 
-5. Access the dashboard in your browser:
+6. Access the dashboard in your browser:
 
 ```
 http://localhost:5173
@@ -397,7 +408,7 @@ npm run dev
 # open http://localhost:5173
 ```
 
-The homepage fetches metrics from `http://localhost:8000/4insights/metrics`.
+The homepage fetches metrics from the BFF at `http://localhost:8010/dashboard/metrics`.
 
 3) Use the Tracker on a web page:
 

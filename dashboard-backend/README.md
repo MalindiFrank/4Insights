@@ -6,7 +6,7 @@ Responsibilities:
 - Receives requests from the frontend
 - Validates tokens with the Auth service (`/demo/verify`)
 - Extracts the API key from the token
-- Queries the Collector for metrics (filtering by API key in a future update)
+- Queries the Collector for metrics, forwarding the API key via `x-api-key` for filtering
 - Returns data to the frontend
 
 ## Quick Start

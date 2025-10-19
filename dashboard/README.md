@@ -16,7 +16,7 @@ The dashboard is built with:
 - **SvelteKit**: Modern web framework for the frontend
 - **TypeScript**: Type-safe development
 - **Native CSS**: No external styling dependencies
-- **Fetch API**: Direct communication with the Collector API
+- **Fetch API**: Communicates with the Dashboard Backend (BFF)
 
 ## Quick Start
 
@@ -24,6 +24,7 @@ The dashboard is built with:
 
 - Node.js (for npm)
 - 4Insights Collector running on `http://localhost:8000`
+- 4Insights Dashboard Backend running on `http://localhost:8010`
 
 ### Installation
 
@@ -55,13 +56,13 @@ npm run preview
 
 ## Configuration
 
-The dashboard connects to the Collector API at `http://localhost:8000/4insights/metrics` by default. To change this:
+The dashboard connects to the Dashboard Backend at `http://localhost:8010/dashboard/metrics` by default. To change this:
 
 1. Edit `src/routes/+page.svelte`
-2. Update the `COLLECTOR_URL` constant:
+2. Update the `BACKEND_URL` constant:
 
 ```typescript
-const COLLECTOR_URL = 'http://your-collector-url:port/4insights/metrics';
+const BACKEND_URL = 'http://your-backend-url:port/dashboard/metrics';
 ```
 
 ## Development
@@ -81,8 +82,8 @@ src/
 ├── routes/
 │   ├── +page.svelte        # Main dashboard page
 │   ├── +layout.svelte      # App layout wrapper
-│   ├── about/              # About page
-│   └── sverdle/            # Demo game (SvelteKit example)
+│   ├── Header.svelte       # App header
+│   └── about/              # About page
 ├── lib/                    # Shared components and utilities
 └── app.html               # HTML template
 ```

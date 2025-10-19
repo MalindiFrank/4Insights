@@ -291,15 +291,23 @@ tracker/
   tests/
     tracker.test.ts       # Tracker functionality tests
 
-dashboard/                # SvelteKit application
-  src/
-    routes/
-      +page.svelte        # Main dashboard with metrics display
-      +layout.svelte      # App layout
-      about/              # About page
-      sverdle/            # Demo game (SvelteKit example)
-  package.json            # SvelteKit dependencies
-  README.md               # Dashboard-specific documentation
+dashboard/                # Dashboard system (frontend + backend)
+  frontend/               # SvelteKit application (UI)
+    src/
+      routes/
+        +page.svelte      # Main dashboard with metrics display
+        +layout.svelte    # App layout
+        Header.svelte     # App header
+        about/            # About page
+    package.json          # SvelteKit dependencies
+  backend/                # Dashboard Backend (BFF) - Deno std
+    main.ts               # HTTP server with CORS and routes
+    services/
+      AuthClient.ts       # Calls auth /demo/verify to extract apiKey
+      MetricsService.ts   # Proxies metrics to collector (x-api-key)
+    utils/
+      Config.ts           # Env config (ports, base URLs)
+    types.ts              # Local backend types
 
 auth/                     # Authentication system
   demo/                   # Demo authentication implementation

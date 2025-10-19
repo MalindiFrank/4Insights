@@ -27,3 +27,4 @@ deno bundle tracker/index.ts tracker/build/tracker.js
 - `endpoint`: optional, defaults to `/4insights/collect`
 - `userId`: optional override for anonymous user id
 
+

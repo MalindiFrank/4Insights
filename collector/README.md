@@ -31,3 +31,4 @@ deno run --allow-net --allow-read --allow-write collector/main.ts
 ## Notes
 - Suitable for development and small deployments. For production, consider a database-backed store and rate limiting.
 
+

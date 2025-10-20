@@ -119,7 +119,7 @@ export class InsightTracker {
   }
 
   private getEndpoint(): string {
-    return this.config.endpoint || "/4insights/collect";
+    return this.config.endpoint || "http://localhost:8000/4insights/collect";
   }
 
   private async sendToBackend(event: PageViewEvent): Promise<void> {

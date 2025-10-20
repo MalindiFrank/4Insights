@@ -1,0 +1,4 @@
+deno_dir
+node_modules
+.git
+data

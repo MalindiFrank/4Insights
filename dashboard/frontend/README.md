@@ -80,6 +80,20 @@ By default the frontend will call `${VITE_DASHBOARD_BACKEND_URL}/dashboard/metri
 - `npm run check` - Run type checking
 - `npm run check:watch` - Run type checking in watch mode
 
+### E2E & tests
+
+- `npm run start:services` - convenience script that runs the root `make start-all` to start the Deno services and frontend (calls Makefile). This does not add any new packages; it is a thin wrapper to the existing Makefile.
+- Playwright-based browser tests are intentionally run separately (Node runtime). To run Playwright tests:
+
+```bash
+cd dashboard/frontend
+npm install --save-dev @playwright/test
+npx playwright install
+npm run test:e2e
+```
+
+Keep Deno and Node runs separate — the project intentionally avoids mixing runtimes in scripts.
+
 ### Project Structure
 
 ```

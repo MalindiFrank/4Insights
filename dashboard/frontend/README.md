@@ -28,15 +28,17 @@ The dashboard is built with:
 
 ### Installation
 
-1. Install dependencies:
+1. Copy example env and edit if needed:
 
 ```bash
-npm install
+cp dashboard/frontend/.env.example dashboard/frontend/.env
 ```
 
-2. Start the development server:
+2. Install dependencies and start dev server:
 
 ```bash
+cd dashboard/frontend
+npm install
 npm run dev
 ```
 
@@ -56,14 +58,17 @@ npm run preview
 
 ## Configuration
 
-The dashboard connects to the Dashboard Backend at `http://localhost:8010/dashboard/metrics` by default. To change this:
+Use `dashboard/frontend/.env` (created from `.env.example`) to configure the
+frontend. The SvelteKit app reads variables prefixed with `VITE_` via
+`import.meta.env`.
 
-1. Edit `src/routes/+page.svelte`
-2. Update the `BACKEND_URL` constant:
+Important variables (in `dashboard/frontend/.env`):
 
-```typescript
-const BACKEND_URL = 'http://your-backend-url:port/dashboard/metrics';
-```
+- VITE_DASHBOARD_BACKEND_URL — URL of the dashboard backend BFF (default `http://localhost:8010`)
+- VITE_AUTH_SERVICE_URL — Auth service URL (default `http://localhost:8001`)
+- VITE_COLLECTOR_URL — Collector URL (used for direct collector access)
+
+By default the frontend will call `${VITE_DASHBOARD_BACKEND_URL}/dashboard/metrics` to fetch metrics.
 
 ## Development
 

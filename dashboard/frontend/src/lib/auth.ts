@@ -5,8 +5,8 @@
  * Provides a clean interface for authentication state management.
  */
 
-import { config } from './config.ts';
-import type { AuthCredentials, AuthSession } from './types.ts';
+import { config } from './config';
+import type { AuthCredentials, AuthSession } from './types';
 
 /**
  * Authentication service class

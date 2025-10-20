@@ -82,6 +82,18 @@ export class AuthMiddleware {
   }
 
   /**
+   * Get CORS headers from .env or default to localhost for dev
+   */
+  static getCorsHeaders(): Record<string, string> {
+    const allowedOrigin = Deno.env.get("AUTH_ALLOWED_ORIGIN") || "http://localhost:5173";
+    return {
+      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    };
+  }
+
+  /**
    * Create standardized error response
    */
   static createErrorResponse(
@@ -94,7 +106,10 @@ export class AuthMiddleware {
     };
     return new Response(JSON.stringify(response), {
       status: statusCode,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...AuthMiddleware.getCorsHeaders()
+      },
     });
   }
 
@@ -113,7 +128,10 @@ export class AuthMiddleware {
     };
     return new Response(JSON.stringify(response), {
       status: statusCode,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...AuthMiddleware.getCorsHeaders()
+      },
     });
   }
 

@@ -171,6 +171,13 @@ Thumbs.db
 !.env.example
 !.env.test
 
+# Service-level env files
+auth/demo/.env
+collector/.env
+dashboard/backend/.env
+dashboard/frontend/.env
+tracker/.env
+
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

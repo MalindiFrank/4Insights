@@ -13,7 +13,7 @@ Responsibilities:
 
 ```bash
 # From repository root
-cd dashboard-backend
+cd dashboard/backend
 DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
   COLLECTOR_BASE_URL=http://localhost:8000 \
   deno run --allow-net --allow-env main.ts

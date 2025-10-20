@@ -8,6 +8,8 @@ node_modules/
 .vscode
 .vscode/
 
+data
+
 # SvelteKit build output
 dashboard/.svelte-kit/
 dashboard/.svelte-kit

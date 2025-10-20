@@ -43,3 +43,20 @@ check:
 svelte-check:
 	@echo "Running svelte-check for dashboard/frontend..."
 	cd dashboard/frontend && npm run check
+
+## Start all services inside a tmux session named '4insights'
+.PHONY: dev-tmux stop-dev-tmux
+dev-tmux:
+	@echo "Starting dev session in tmux (session name: 4insights)"
+	@if ! command -v tmux >/dev/null 2>&1; then \
+		echo "tmux not found. Install tmux or run 'make start-all' instead."; exit 1; \
+	fi
+	@tmux new-session -d -s 4insights -n auth 'cd auth/demo/server && deno run --allow-net --allow-env main.ts'
+	@tmux split-window -h -t 4insights 'cd collector && deno run --allow-net --allow-read --allow-write main.ts'
+	@tmux split-window -v -t 4insights 'cd dashboard/backend && deno run --allow-net --allow-env main.ts'
+	@tmux select-pane -t 0
+	@tmux split-window -v -t 4insights 'cd dashboard/frontend && npm install --no-audit --no-fund && npm run dev'
+	@tmux attach -t 4insights
+
+stop-dev-tmux:
+	-@tmux kill-session -t 4insights || true

@@ -1,8 +1,13 @@
 /**
  * Config - Singleton for dashboard backend configuration
+ * 
+ * Reads configuration from environment variables with sensible defaults
+ * for development and production environments.
  */
 
-export class Config {
+import type { DashboardBackendConfig } from "../types.ts";
+
+export class Config implements DashboardBackendConfig {
   private static instance: Config;
   readonly authBaseUrl: string;
   readonly collectorBaseUrl: string;
@@ -14,6 +19,9 @@ export class Config {
     this.port = parseInt(Deno.env.get("DASHBOARD_BACKEND_PORT") ?? "8010");
   }
 
+  /**
+   * Get singleton config instance
+   */
   static getInstance(): Config {
     if (!Config.instance) Config.instance = new Config();
     return Config.instance;

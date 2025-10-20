@@ -410,7 +410,7 @@ The collector listens on `http://localhost:8000` and exposes:
 2) Run the Dashboard (SvelteKit):
 
 ```bash
-cd dashboard
+cd dashboard/frontend
 npm install
 npm run dev
 # open http://localhost:5173

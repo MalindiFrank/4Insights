@@ -57,8 +57,3 @@ Developer notes and tips
 Troubleshooting
 - If Playwright tests fail locally, ensure browsers are installed: `npx playwright install`.
 - If Deno reports unstable flag warnings, upgrade to Deno 2+ or run the Deno helper which avoids the global `--unstable` flag when possible.
-
-If you'd like, I can:
-- Split the existing Git commits into smaller one-file commits (interactive rebase).
-- Create lightweight Dockerfiles and a `docker-compose.yml` for local containerized development.
-- Add a CI cache for Playwright browser binaries to speed up GitHub Actions.

@@ -1,189 +1,71 @@
 # Deno / OS / Editor
 .deno/
 .DS_Store
+# Deno
+.deno/
+.denocache/
 
 # Node
 node_modules/
 
-.vscode
-.vscode/
-
-data
-
-# SvelteKit build output
-dashboard/.svelte-kit/
-dashboard/.svelte-kit
-.svelte-kit/
-
-# .gitignore for projects using Node.js, Deno, Svelte (incl. SvelteKit) and Docker
-# Tweak the sections to match your exact tools and build folders.
-
-# -----------------
-# Node / JS
-# -----------------
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-.pnp.*
-.pnpm-store/
-
-# Lockfiles and package manifests should generally be tracked (do NOT ignore):
-# package-lock.json, yarn.lock, pnpm-lock.yaml
-
-# -----------------
 # Build outputs
-# -----------------
-# Generic
 dist/
 build/
 out/
+tracker/build/
 
-# Svelte / SvelteKit / Sapper
+# SvelteKit / Vite
 .svelte-kit/
 public/build/
-__sapper__/
-.sapper/
-
-# Next/Remix (if ever used)
-.next/
-.next-build-id
-
-# Rollup/Vite cache
 .vite/
 
-# -----------------
-# Deno
-# -----------------
-# Deno caches are usually outside the repo, but if you configure a local cache dir, ignore it here:
-.deno/
-.denocache/
-
-# deno.lock should be tracked; do NOT ignore it unless you know why
-
-# -----------------
-# TypeScript
-# -----------------
-*.tsbuildinfo
-
-# -----------------
 # Logs
-# -----------------
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
 
-# -----------------
 # Environment / secrets
-# -----------------
-# Ignore local env files — keep templates like .env.example tracked
+# keep templates like .env.example checked in
 .env
 .env.*.local
 .env.local
 .local.env
+!.env.example
 
-# -----------------
 # Docker
-# -----------------
-# Ignore local docker-compose overrides / ephemeral files
 docker-compose.override.yml
 docker-compose.*.local.yml
 docker-temp-*
 
-# If you create build context folders or temporary docker build output in-project, add them here
-
-# -----------------
 # Tests / coverage
-# -----------------
 coverage/
-coverage-final.json
 .lcov/
 .nyc_output/
 
-# -----------------
 # Editor / IDE
-# -----------------
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
 
-# -----------------
-# OS files
-# -----------------
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# -----------------
 # Misc caches
-# -----------------
 .cache/
 .cache-loader/
 .parcel-cache/
 
-# Yarn PnP artifacts
-.yarn/*/build-state.yml
-
-# -----------------
-# Build system / package manager extras
-# -----------------
-.eslintcache
-.cache/
-.pnpm-debug.log
-
-# -----------------
-# Optional: editor swap files / temp
-# -----------------
+# Optional editor swap
 *~
 *.swp
 *.swo
 
-# -----------------
-# Optional: secrets or platform files you might accidentally generate
-# -----------------
-.envrc
-*.pem
-*.key
-*.crt
-
-
-# default from scaffold
-node_modules
-.marscode
-
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Env
-.env
-.env.*
-!.env.example
-!.env.test
-
-# Service-level env files
+# Service-level local env files (ignored; keep examples tracked)
 auth/demo/.env
 collector/.env
 dashboard/backend/.env
 dashboard/frontend/.env
 tracker/.env
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Local device config for marscode tool (ignore)
+.marscode/
 
-
-# End of .gitignore
+# Keep package lockfiles tracked
+# package-lock.json, yarn.lock, pnpm-lock.yaml
+*.tsbuildinfo
 

@@ -85,7 +85,8 @@ export class AuthMiddleware {
    * Get CORS headers from .env or default to localhost for dev
    */
   static getCorsHeaders(): Record<string, string> {
-    const allowedOrigin = Deno.env.get("AUTH_ALLOWED_ORIGIN") || "http://localhost:5173";
+    const allowedOrigin = Deno.env.get("AUTH_ALLOWED_ORIGIN") ||
+      "http://localhost:5173";
     return {
       "Access-Control-Allow-Origin": allowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
@@ -108,7 +109,7 @@ export class AuthMiddleware {
       status: statusCode,
       headers: {
         "Content-Type": "application/json",
-        ...AuthMiddleware.getCorsHeaders()
+        ...AuthMiddleware.getCorsHeaders(),
       },
     });
   }
@@ -130,7 +131,7 @@ export class AuthMiddleware {
       status: statusCode,
       headers: {
         "Content-Type": "application/json",
-        ...AuthMiddleware.getCorsHeaders()
+        ...AuthMiddleware.getCorsHeaders(),
       },
     });
   }

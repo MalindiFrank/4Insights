@@ -11,13 +11,20 @@ Responsibilities:
 
 ## Quick Start
 
+1. Copy example env and edit if needed:
+
 ```bash
-# From repository root
-cd dashboard/backend
-DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
-  COLLECTOR_BASE_URL=http://localhost:8000 \
-  deno run --allow-net --allow-env main.ts
+cp dashboard/backend/.env.example dashboard/backend/.env
 ```
+
+2. Run the backend (from repo root):
+
+```bash
+cd dashboard/backend
+deno run --allow-net --allow-env main.ts
+```
+
+You can also set variables inline if you prefer (example shown in the `.env.example`).
 
 Routes:
 - GET /health – Health check

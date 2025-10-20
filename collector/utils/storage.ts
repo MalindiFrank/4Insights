@@ -25,7 +25,9 @@ export class FileEventStore {
   }
 
   async append(event: AnyEvent, apiKey?: string): Promise<void> {
-    const enriched: StoredEvent = apiKey ? { ...(event as any), _apiKey: apiKey } : (event as any);
+    const enriched: StoredEvent = apiKey
+      ? { ...(event as any), _apiKey: apiKey }
+      : (event as any);
     const line = JSON.stringify(enriched) + "\n";
     await Deno.writeTextFile(this.#eventsFile, line, { append: true });
   }
@@ -63,9 +65,12 @@ export class FileEventStore {
 
   async overview(apiKey?: string): Promise<MetricsOverview> {
     const events = await this.readAll();
-    const filtered = apiKey ? events.filter((e) => (e as any)._apiKey === apiKey) : events;
+    const filtered = apiKey
+      ? events.filter((e) => (e as any)._apiKey === apiKey)
+      : events;
     const totalEvents = filtered.length;
-    const totalPageviews = filtered.filter((e) => (e as any).type === "pageview").length;
+    const totalPageviews =
+      filtered.filter((e) => (e as any).type === "pageview").length;
     const topPaths = await this.metricsTopPaths(10, apiKey);
     return { totalEvents, totalPageviews, topPaths };
   }

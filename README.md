@@ -171,9 +171,10 @@ in your website (entry `html` file / component):
 ></script>
 ```
 
-The `tracker` will `automatically send` pageview events to your Collector API. `No
-configuration` is required unless you want to track additional events like clicks
-or custom interactions.
+The `tracker` will `automatically send` pageview events to your Collector API.
+`No
+configuration` is required unless you want to track additional events like
+clicks or custom interactions.
 
 #### Viewing Analytics
 

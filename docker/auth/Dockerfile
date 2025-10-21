@@ -1,11 +1,12 @@
 FROM denoland/deno:latest
 
+# Use repo root as build context (docker-compose sets context)
 WORKDIR /app
 
-# Copy the auth demo server
-COPY auth/demo/server /app
+# Copy the entire repository so relative imports to ../../shared resolve
+COPY . /app
 
 EXPOSE 8001
 
-# Run the demo auth server
-CMD ["run", "--allow-net", "--allow-env", "main.ts"]
+# Run the demo auth server from its path
+CMD ["run", "--allow-net", "--allow-env", "auth/demo/server/main.ts"]

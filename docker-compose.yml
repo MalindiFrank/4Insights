@@ -1,21 +1,27 @@
-version: '3.8'
+version: "3.8"
 services:
   auth:
-    build: ./docker/auth
+    build:
+      context: .
+      dockerfile: docker/auth/Dockerfile
     ports:
       - "8001:8001"
     environment:
       - DEMO_AUTH_PORT=8001
 
   collector:
-    build: ./docker/collector
+    build:
+      context: .
+      dockerfile: docker/collector/Dockerfile
     ports:
       - "8000:8000"
     volumes:
       - collector_data:/app/data
 
   backend:
-    build: ./docker/dashboard-backend
+    build:
+      context: .
+      dockerfile: docker/dashboard-backend/Dockerfile
     ports:
       - "8010:8010"
     environment:
@@ -24,7 +30,9 @@ services:
       - COLLECTOR_BASE_URL=http://collector:8000
 
   frontend:
-    build: ./docker/dashboard-frontend
+    build:
+      context: .
+      dockerfile: docker/dashboard-frontend/Dockerfile
     ports:
       - "5173:80"
     environment:

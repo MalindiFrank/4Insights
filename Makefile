@@ -21,6 +21,8 @@ collector:
 backend:
 	@echo "Starting Dashboard Backend (dashboard/backend)..."
 	cd dashboard/backend && deno run --allow-net --allow-env main.ts &
+	sleep 2
+	(cd dashboard/backend && deno lint && deno test tests/backend.test.ts --allow-net --allow-env --allow-read)
 
 ## Run dashboard frontend (SvelteKit dev server)
 frontend:
@@ -54,7 +56,9 @@ verify:
 	deno check collector/main.ts && \
 	(cd collector && deno lint && deno test --allow-net --allow-read)
 	@echo "Checking dashboard backend..."
-	deno check dashboard/backend/main.ts && \
+	# Start backend server in background, wait, then run tests
+	(cd dashboard/backend && deno run --allow-net --allow-env main.ts &)
+	sleep 2
 	(cd dashboard/backend && deno lint && deno test tests/backend.test.ts --allow-net --allow-env --allow-read)
 	@echo "Checking tracker..."
 	deno check tracker/index.ts && \

@@ -3,7 +3,8 @@ FROM denoland/deno:2.5.4 AS tracker-builder
 WORKDIR /tracker
 COPY tracker/ ./
 # RUN deno cache --config tsconfig.json index.ts && deno bundle --config tsconfig.json index.ts build/tracker.js
-RUN deno cache --config tsconfig.json index.ts \ && mkdir -p build \ && deno bundle --config tsconfig.json index.ts build/tracker.js
+RUN deno cache --config tsconfig.json index.ts
+RUN mkdir -p build && deno bundle --config tsconfig.json index.ts build/tracker.js
 
 ### Build stage (Node) - builds the frontend site
 FROM node:20-alpine3.18 AS builder

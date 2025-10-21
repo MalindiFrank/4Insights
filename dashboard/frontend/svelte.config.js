@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -8,10 +8,26 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
+		// Use the static adapter so `npm run build` produces a self-contained `build/` directory
+		// which can be served directly by nginx in the production Docker image.
+		adapter: adapter({
+			pages: 'build',
+			assets: 'build',
+			strict: true,
+			// Add cache headers for images and other assets
+			precompress: true,
+			headers: {
+				'/assets': {
+					'Cache-Control': 'public, max-age=31536000, immutable'
+				},
+				'/images': {
+					'Cache-Control': 'public, max-age=31536000, immutable'
+				},
+				'/.*(jpg|jpeg|png|gif|svg|woff2?)$': {
+					'Cache-Control': 'public, max-age=31536000, immutable'
+				}
+			}
+		})
 	}
 };
 

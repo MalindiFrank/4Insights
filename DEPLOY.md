@@ -11,12 +11,12 @@ image build, so no pre-commit of generated bundles is required.
 ## Prerequisites
 
 - Docker and docker-compose installed (for containerized flow)
-- For local dev: Deno (v1.36+ recommended), Node.js (>=18), npm
+- For local dev: Deno (v2.x+ recommended), Node.js (>=18), npm
 - You will supply environment variables (per-service). See below.
 
 ## Environment variables (example)
 
-You said you'll provide env files/vars on the hosting platforms. The important
+You'll provide env variables or .env file on the hosting platforms. The important
 variables are:
 
 - Dashboard backend (Deno):

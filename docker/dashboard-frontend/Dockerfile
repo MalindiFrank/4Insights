@@ -1,5 +1,5 @@
 ### Tracker bundle stage (uses Deno to bundle tracker/index.ts)
-FROM denoland/deno:alpine-1.34.3 AS tracker-builder
+FROM denoland/deno:2.5.4 AS tracker-builder
 WORKDIR /tracker
 COPY tracker/ ./
 RUN deno cache --config tsconfig.json index.ts && deno bundle --config tsconfig.json index.ts build/tracker.js

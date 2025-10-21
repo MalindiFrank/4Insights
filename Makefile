@@ -1,6 +1,6 @@
 ## Makefile for 4Insights — quick start and dev tasks
 
-.PHONY: all auth collector backend frontend start-all fmt check svelte-check
+.PHONY: all auth collector backend frontend start-all fmt check verify svelte-check
 
 all: start-all
 
@@ -43,6 +43,23 @@ check:
 svelte-check:
 	@echo "Running svelte-check for dashboard/frontend..."
 	cd dashboard/frontend && npm run check
+
+## Run comprehensive verification of Deno code
+verify:
+	@echo "Running comprehensive Deno verification..."
+	@echo "Checking auth service..."
+	deno check auth/demo/server/main.ts && \
+	(cd auth/demo/server && deno lint && deno test --allow-net --allow-env)
+	@echo "Checking collector service..."
+	deno check collector/main.ts && \
+	(cd collector && deno lint && deno test --allow-net --allow-read)
+	@echo "Checking dashboard backend..."
+	deno check dashboard/backend/main.ts && \
+	(cd dashboard/backend && deno lint && deno test tests/backend.test.ts --allow-net --allow-env --allow-read)
+	@echo "Checking tracker..."
+	deno check tracker/index.ts && \
+	(cd tracker && deno lint && deno test --allow-net)
+	@echo "All Deno checks passed!"
 
 ## Start all services inside a tmux session named '4insights'
 .PHONY: dev-tmux stop-dev-tmux

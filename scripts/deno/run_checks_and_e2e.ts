@@ -18,7 +18,9 @@ async function run(cmd: string[], capture = false) {
 
   const child = command.spawn();
   const status = await child.status;
-  if (!status.success) throw new Error(`Command failed: ${[program, ...args].join(" ")}`);
+  if (!status.success) {
+    throw new Error(`Command failed: ${[program, ...args].join(" ")}`);
+  }
   if (capture && child.output) {
     const { stdout } = await child.output();
     return new TextDecoder().decode(stdout);
@@ -50,27 +52,39 @@ async function main() {
 
   console.log("Running deno check on services...");
   // Check auth, collector, backend
-    if (useGlobalUnstable) {
-      await run(["deno", "check", "--unstable", repoRootPath + "auth/demo/server"]);
-      await run(["deno", "check", "--unstable", repoRootPath + "collector"]);
-      await run(["deno", "check", "--unstable", repoRootPath + "dashboard/backend"]);
-    } else {
-      // Deno v2+ prefers granular unstable flags; omit the global flag to avoid warnings.
-      await run(["deno", "check", repoRootPath + "auth/demo/server"]);
-      await run(["deno", "check", repoRootPath + "collector"]);
-      await run(["deno", "check", repoRootPath + "dashboard/backend"]);
-    }
+  if (useGlobalUnstable) {
+    await run([
+      "deno",
+      "check",
+      "--unstable",
+      repoRootPath + "auth/demo/server",
+    ]);
+    await run(["deno", "check", "--unstable", repoRootPath + "collector"]);
+    await run([
+      "deno",
+      "check",
+      "--unstable",
+      repoRootPath + "dashboard/backend",
+    ]);
+  } else {
+    // Deno v2+ prefers granular unstable flags; omit the global flag to avoid warnings.
+    await run(["deno", "check", repoRootPath + "auth/demo/server"]);
+    await run(["deno", "check", repoRootPath + "collector"]);
+    await run(["deno", "check", repoRootPath + "dashboard/backend"]);
+  }
 
   console.log("Running HTTP-based e2e helper script (shell)...");
   // execute the shell e2e script we created earlier
-    await run(["/bin/sh", repoRootPath + "scripts/e2e_test.sh"]);
+  await run(["/bin/sh", repoRootPath + "scripts/e2e_test.sh"]);
 
   // NOTE: we intentionally do not run npm or Node-based tools from this Deno script.
   // If you want to run Playwright/browser E2E tests, run them separately with Node
   // in the `dashboard/frontend` folder. This keeps Deno and Node responsibilities separated.
   const runBrowser = Deno.env.get("RUN_BROWSER_E2E") || "false";
   if (runBrowser === "true") {
-    console.log("RUN_BROWSER_E2E is set, but this Deno script will not invoke npm.\nPlease run Playwright manually in the dashboard/frontend folder:\n  cd dashboard/frontend && npm run test:e2e");
+    console.log(
+      "RUN_BROWSER_E2E is set, but this Deno script will not invoke npm.\nPlease run Playwright manually in the dashboard/frontend folder:\n  cd dashboard/frontend && npm run test:e2e",
+    );
   }
 
   console.log("All checks and e2e helper completed.");

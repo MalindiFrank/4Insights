@@ -1,22 +1,8 @@
-import { test, expect } from '@playwright/test';
-import process from "node:process";
+import { test, expect, type Page } from '@playwright/test';
 
-const BASE = process.env.BASE_URL || 'http://localhost:5173';
+const BASE = process.env.BASE_URL ?? 'http://localhost:5173';
 
-// Minimal local Page interface for type-checking without importing Playwright types
-type MinimalLocator = {
-  count(): Promise<number>;
-  click(): Promise<void>;
-  isVisible?(): Promise<boolean>;
-  toHaveText?: (t: string | RegExp) => Promise<void>;
-};
-
-type MinimalPage = {
-  goto(url: string): Promise<void>;
-  locator(selector: string): MinimalLocator & { toBeVisible?: (opts?: { timeout?: number }) => Promise<void> };
-};
-
-test('dashboard loads and shows metrics', async ({ page }: { page: MinimalPage }) => {
+test('dashboard loads and shows metrics', async ({ page }: { page: Page }) => {
   // Navigate to the dashboard
   await page.goto(BASE);
 

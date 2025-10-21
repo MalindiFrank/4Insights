@@ -8,5 +8,5 @@
     "@std/path": "jsr:@std/path@0.218.2",
     "@std/testing": "jsr:@std/testing@^1.0.16"
   },
-  "exclude": ["dashboard/"]
+  "exclude": ["dashboard/", "tracker/index.ts"]
 }

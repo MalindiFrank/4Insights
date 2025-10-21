@@ -96,9 +96,4 @@ npx playwright install
 npm run test:e2e
 ```
 
-## Final note
 
-If you want, I can automate the full deploy with a `make deploy-render` target
-or prepare GitHub Actions to build images and push to a registry then trigger
-deployments on Render/Vercel. Tell me which provider to prioritize and I will
-prepare the CI steps.

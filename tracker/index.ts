@@ -1,3 +1,4 @@
+/// <reference lib="deno.ns" />
 // tracker/index.ts - InsightTracker TypeScript implementation
 //
 // InsightTracker captures page views in a privacy-friendly way and sends them
@@ -77,24 +78,28 @@ export class InsightTracker {
       urlParams.forEach((value, key) => {
         params[key] = value;
       });
-    } catch {}
+    } catch {
+      // Ignore errors: extracting route params is best-effort in browser
+    }
     return params;
   }
 
   private setupSPATracking(): void {
     // Wrap history APIs to detect client-side route changes
-    const originalPushState = history.pushState.bind(history);
-    const originalReplaceState = history.replaceState.bind(history);
+    if (typeof history !== "undefined" && history.pushState && history.replaceState) {
+      const originalPushState = history.pushState.bind(history);
+      const originalReplaceState = history.replaceState.bind(history);
 
-    history.pushState = (...args: any[]) => {
-      originalPushState(...args);
-      this.handleRouteChange();
-    };
-    history.replaceState = (...args: any[]) => {
-      originalReplaceState(...args);
-      this.handleRouteChange();
-    };
-    globalThis.addEventListener("popstate", () => this.handleRouteChange());
+      history.pushState = (...args: unknown[]) => {
+        originalPushState(...args);
+        this.handleRouteChange();
+      };
+      history.replaceState = (...args: unknown[]) => {
+        originalReplaceState(...args);
+        this.handleRouteChange();
+      };
+      globalThis.addEventListener && globalThis.addEventListener("popstate", () => this.handleRouteChange());
+    }
   }
 
   private handleRouteChange(): void {
@@ -102,19 +107,21 @@ export class InsightTracker {
   }
 
   private setupUnloadTracking(): void {
-    globalThis.addEventListener("beforeunload", () => {
-      const events = this.getPendingEvents();
-      if (events.length > 0) {
-        const blob = new Blob([JSON.stringify(events)], {
-          type: "application/json",
-        });
-        globalThis.navigator?.sendBeacon?.(this.getEndpoint(), blob);
-      }
-    });
+    if (typeof globalThis.addEventListener === "function") {
+      globalThis.addEventListener("beforeunload", () => {
+        const events = this.getPendingEvents();
+        if (events.length > 0 && typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+          const blob = new Blob([JSON.stringify(events)], {
+            type: "application/json",
+          });
+          navigator.sendBeacon(this.getEndpoint(), blob);
+        }
+      });
+    }
   }
 
   // For future queued events; currently empty
-  private getPendingEvents(): any[] {
+  private getPendingEvents(): object[] {
     return [];
   }
 
@@ -125,10 +132,9 @@ export class InsightTracker {
   private async sendToBackend(event: PageViewEvent): Promise<void> {
     const body = JSON.stringify([event]);
     const url = this.getEndpoint();
-    const beacon = globalThis.navigator?.sendBeacon?.bind(globalThis.navigator);
-    if (beacon) {
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
       const blob = new Blob([body], { type: "application/json" });
-      if (beacon(url, blob)) return;
+      if (navigator.sendBeacon(url, blob)) return;
     }
     try {
       await fetch(url, {
@@ -153,10 +159,15 @@ declare global {
   }
 }
 
-globalThis.window && (globalThis.window.InsightTracker = InsightTracker);
-
-const currentScript =
-  (globalThis.document?.currentScript as HTMLScriptElement) || undefined;
+if (typeof window !== "undefined") {
+  // Assign to window for browser usage
+  (window as Record<string, unknown>).InsightTracker = InsightTracker;
+}
+// @ts-ignore: Deno type-check does not include HTMLScriptElement in global context
+let currentScript: unknown = undefined;
+if (typeof document !== "undefined" && typeof document.currentScript !== "undefined") {
+  currentScript = document.currentScript;
+}
 const apiKey = currentScript?.getAttribute("data-key");
 if (apiKey) {
   new InsightTracker({ apiKey });

@@ -3,13 +3,13 @@ import { assert } from "@std/assert";
 import { send } from "../send.ts";
 
 // Mock fetch for testing
-const mockFetch = spy(async (input: string | URL | Request, _init?: RequestInit) => {
+const mockFetch = spy((input: string | URL | Request, _init?: RequestInit) => {
   const url = input instanceof Request ? input.url : String(input);
   assert(url === "http://localhost:8080/collect");
-  return new Response(JSON.stringify({ success: true }), {
+  return Promise.resolve(new Response(JSON.stringify({ success: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
-  });
+  }));
 });
 
 // Replace global fetch with mock

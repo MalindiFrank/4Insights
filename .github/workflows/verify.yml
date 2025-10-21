@@ -1,0 +1,38 @@
+name: Verify
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pre-docker-verify:
+    name: Pre-Docker Verification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.37.x"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'dashboard/frontend/package-lock.json'
+
+      - name: Install frontend dependencies
+        run: |
+          cd dashboard/frontend
+          npm ci
+
+      - name: Run frontend checks
+        run: |
+          cd dashboard/frontend
+          npm run check
+
+      - name: Run Deno verification
+        run: make verify

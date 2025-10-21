@@ -3,9 +3,10 @@
 // FileEventStore persists events in a newline-delimited JSON file (NDJSON).
 // It's easy to inspect and suitable for small deployments or development.
 // FileSiteStore provides a minimal site registry for admin functionality.
-import type { AnyEvent, MetricsOverview, Site } from "../types.ts";
+import type { AnyEvent, MetricsOverview, Site, PageViewEvent } from "../types.ts";
 
 type StoredEvent = AnyEvent & { _apiKey?: string };
+type StoredPageViewEvent = PageViewEvent & { _apiKey?: string };
 
 export class FileEventStore {
   #dir: string;
@@ -25,9 +26,7 @@ export class FileEventStore {
   }
 
   async append(event: AnyEvent, apiKey?: string): Promise<void> {
-    const enriched: StoredEvent = apiKey
-      ? { ...(event as any), _apiKey: apiKey }
-      : (event as any);
+    const enriched: StoredEvent = { ...event, _apiKey: apiKey };
     const line = JSON.stringify(enriched) + "\n";
     await Deno.writeTextFile(this.#eventsFile, line, { append: true });
   }
@@ -36,7 +35,7 @@ export class FileEventStore {
     try {
       const text = await Deno.readTextFile(this.#eventsFile);
       const lines = text.split("\n").filter((l) => l.trim().length > 0);
-      return lines.map((l) => JSON.parse(l));
+      return lines.map((l) => JSON.parse(l) as StoredEvent);
     } catch (_) {
       return [];
     }
@@ -49,9 +48,10 @@ export class FileEventStore {
     const events = await this.readAll();
     const counts = new Map<string, number>();
     for (const e of events) {
-      if (apiKey && (e as any)._apiKey !== apiKey) continue;
+      if (apiKey && e._apiKey !== apiKey) continue;
       // Only pageviews for now
-      const path = (e as any).metadata?.path ?? "";
+      if (e.type !== "pageview") continue;
+      const path = (e as StoredPageViewEvent).metadata.path;
       if (!path) continue;
       counts.set(path, (counts.get(path) ?? 0) + 1);
     }
@@ -66,11 +66,10 @@ export class FileEventStore {
   async overview(apiKey?: string): Promise<MetricsOverview> {
     const events = await this.readAll();
     const filtered = apiKey
-      ? events.filter((e) => (e as any)._apiKey === apiKey)
+      ? events.filter((e) => e._apiKey === apiKey)
       : events;
     const totalEvents = filtered.length;
-    const totalPageviews =
-      filtered.filter((e) => (e as any).type === "pageview").length;
+    const totalPageviews = filtered.filter((e) => e.type === "pageview").length;
     const topPaths = await this.metricsTopPaths(10, apiKey);
     return { totalEvents, totalPageviews, topPaths };
   }

@@ -18,39 +18,42 @@ import {
 export class InMemoryCredentialStorage implements CredentialStorage {
   private credentials: Map<string, CredentialData> = new Map();
 
-  async store(apiKey: string, data: CredentialData): Promise<void> {
+  store(apiKey: string, data: CredentialData): Promise<void> {
     this.credentials.set(apiKey, data);
+    return Promise.resolve();
   }
 
-  async find(apiKey: string): Promise<CredentialData | null> {
-    return this.credentials.get(apiKey) || null;
+  find(apiKey: string): Promise<CredentialData | null> {
+    return Promise.resolve(this.credentials.get(apiKey) || null);
   }
 
-  async validate(apiKey: string, passphrase: string): Promise<boolean> {
+  validate(apiKey: string, passphrase: string): Promise<boolean> {
     const credential = this.credentials.get(apiKey);
     if (!credential) {
-      return false;
+      return Promise.resolve(false);
     }
 
     // Check if expired
     if (new Date() > credential.expiresAt) {
       this.credentials.delete(apiKey);
-      return false;
+      return Promise.resolve(false);
     }
 
-    return credential.passphrase === passphrase;
+    return Promise.resolve(credential.passphrase === passphrase);
   }
 
-  async delete(apiKey: string): Promise<void> {
+  delete(apiKey: string): Promise<void> {
     this.credentials.delete(apiKey);
+    return Promise.resolve();
   }
 
-  async cleanup(): Promise<void> {
+  cleanup(): Promise<void> {
     const now = new Date();
     for (const [apiKey, credential] of this.credentials.entries()) {
       if (now > credential.expiresAt) {
         this.credentials.delete(apiKey);
       }
     }
+    return Promise.resolve();
   }
 }

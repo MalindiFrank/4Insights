@@ -24,13 +24,19 @@ new InsightTracker({
 The tracker sends a `pageview` event on load and on SPA navigations. It sets
 header `X-API-Key` with your provided `apiKey`.
 
-## Build
+## Build (Deno-only)
 
-Copy example env and then bundle the tracker to a single JS file:
+The project ships a Deno-based bundler so you don't need to commit generated
+files.
+
+Create the output folder (optional) and run the Deno bundler:
 
 ```bash
+# (optional) copy env example if you use runtime config
 cp tracker/.env.example tracker/.env
-deno bundle tracker/index.ts tracker/build/tracker.js
+
+# Deno-only bundler produces tracker/build/tracker.js
+deno run --allow-read --allow-write tracker/build.ts --outDir=tracker/build
 ```
 
 ## Config

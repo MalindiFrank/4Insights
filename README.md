@@ -1,517 +1,128 @@
-## 4Insights
+# 4Insights
 
-4Insights is a **privacy-first, lightweight web analytics platform** designed to
-help small websites track pageviews and basic user interactions without storing
-personal data. It allows website owners to understand traffic patterns, top
-pages, and engagement metrics in a clear, simple dashboard.
+4Insights helps website owners understand how people use their sites — which pages are popular, how visitors move between pages, and what content works best — without spying on anyone. It’s designed so a non-technical person (or a curious 16‑year‑old) can get started quickly: you add a tiny snippet of code to your site, and the system collects anonymous, summary information that helps you improve your site.
 
-Unlike traditional analytics tools, 4Insights does **not use cookies, does not
-track users individually, and avoids storing personal information**. This
-ensures compliance with privacy standards and keeps your data collection ethical
-and lightweight.
+A lightweight, privacy-first web analytics platform designed to be simple to operate, easy to extend, and production-ready when the team is ready to scale and monetize. 4Insights is built with the goals of clarity, maintainability, and minimal runtime dependencies — a showcase of system integration best-practices.
 
 ---
 
-### Project Overview
+## Vision
 
-4Insights provides website owners with a simple way to collect and visualize
-**aggregate analytics data**. The system focuses on **minimalism, privacy, and
-scalability**, making it suitable for small blogs, portfolios, and business
-websites.
+Deliver a small, robust analytics stack that provides useful, privacy-respecting insights to website owners while remaining easy to operate and extend. The implementation emphasizes:
 
-Core goals:
-
-- Collect basic events like pageviews and clicks.
-- Keep all data anonymous and privacy-compliant.
-- Provide a lightweight, clear dashboard.
-- Ensure the system is modular and expandable for future features.
+* **Simplicity and clarity** — short, readable code and straightforward developer workflows.
+* **Dependency freedom** — prefer built-in language features and small, auditable dependencies.
+* **Separation of concerns** — modular components (Tracker, Collector, Auth, Dashboard/BFF).
+* **Event-driven design** — reliable event ingestion and pluggable persistence.
+* **Production readiness** — designed to be hardened for scale (storage adapters, auth adapters, rate-limiting, observability).
 
 ---
 
-### Features
+## What 4Insights provides today
 
-**Implemented Features:**
+* A small **tracker snippet** (JS) to embed on client sites; captures pageviews and basic metadata (SPA-aware).
+* A **Collector** service (Deno) that ingests, validates, and persists tracking events. The default development storage is NDJSON files.
+* A **Dashboard** (SvelteKit) with a Backend-For-Frontend (BFF) to present filtered analytics to users.
+* A **Demo authentication** service that issues temporary API credentials for quick trials and demonstrations.
 
-- ✅ Track pageviews on any website with a TypeScript/JavaScript snippet.
-- ✅ SPA (Single Page Application) support with history API tracking.
-- ✅ Dashboard showing total events, pageviews, and top paths.
-- ✅ File-based event storage using NDJSON format.
-- ✅ CORS-enabled Collector API with validation.
-- ✅ Site management via admin endpoints.
-- ✅ Demo authentication system with API keys and sessions.
-- ✅ Privacy-first: no cookies, no personal data collection.
-- ✅ Comprehensive metadata collection (user agent, screen size, timezone,
-  etc.).
-
-**Future Features:**
-
-- Event batching for performance optimization.
-- Click and custom event tracking.
-- CSV export of analytics data.
-- Funnel tracking and conversion analytics.
-- Role-based site management and team collaboration.
-- Webhooks for event notifications.
-- Database integration (currently using file storage).
-- Production-ready authentication system.
+> Note: Demo auth and NDJSON storage are MVP conveniences and will be replaced by persistent DB-backed services for production.
 
 ---
 
-### Architecture
+## Architecture (concise)
 
-4Insights consists of four main components:
+* **Tracker → Collector**: the tracker sends events directly to the Collector for performance and scalability. Collector enforces payload validation and site-level credential checks.
+* **Dashboard Client → BFF → Services**: the BFF is responsible for user session validation (members-auth introspection), aggregation, and returning pre-filtered results to the dashboard UI.
+* **Auth**: two independent paths:
 
-1. **Tracker Script**
+  * **Demo Auth**: temporary credentials for quick onboarding (kept lightweight and in-memory for demo use).
+  * **Members Auth**: planned production auth with persistent storage, token introspection, user and team management.
 
-   - A small TypeScript/JavaScript snippet embedded into websites.
-   - Sends pageview events to the Collector API with comprehensive metadata.
-   - Uses `sendBeacon` for reliable delivery and supports Single Page
-     Applications (SPAs).
-   - Auto-initializes when loaded via script tag with `data-key` attribute.
-
-2. **Collector API**
-
-   - A backend service built with Deno 2 using native APIs.
-   - Receives event payloads, validates them, and stores them in NDJSON files.
-   - Provides endpoints for event collection, metrics aggregation, and site
-     management.
-   - Includes CORS support and file-based storage for development.
-
-3. **Dashboard**
-
-   - A SvelteKit application for viewing analytics data.
-   - Communicates only with the Dashboard Backend (BFF).
-   - Shows total events, pageviews, and top paths with real-time refresh
-     capability.
-
-4. **Authentication System (Demo)**
-
-   - A lightweight authentication system built with Deno's standard library.
-   - Provides API key generation, session management, and token-based
-     authentication.
-   - Includes in-memory storage with automatic cleanup and CORS support.
-   - Ready for integration with the main analytics system.
-
-The system follows a BFF architecture:
-
-```
-Tracker → Collector (stores with API key) → Dashboard Backend (validates token, forwards x-api-key) → Dashboard Client
-```
+The system favors a pluggable approach: storage and auth are implemented behind adapter interfaces so production services (Postgres, Redis, etc.) can be swapped in without large rewrites.
 
 ---
 
-### Getting Started
+## Security & privacy principles (high level)
 
-#### Prerequisites
+4Insights is privacy-first by design:
 
-- Deno 2
-- Node.js (for building SvelteKit dashboard)
-- No database required (uses file-based storage for development)
-
-#### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/MalindiFrank/4Insights.git
-cd 4Insights
-```
-
-2. Install dependencies for the dashboard:
-
-```bash
-cd dashboard/frontend
-npm install
-```
-
-3. Start the Collector API (development mode):
-
-```bash
-cd ../collector
-deno run --allow-net --allow-read --allow-write main.ts
-```
-
-4. Start the Dashboard Backend (BFF):
-
-```bash
-cd ../dashboard/backend
-DASHBOARD_BACKEND_PORT=8010 AUTH_BASE_URL=http://localhost:8001 \
-  COLLECTOR_BASE_URL=http://localhost:8000 \
-  deno run --allow-net --allow-env main.ts
-```
-
-5. Run the SvelteKit dashboard:
-
-```bash
-cd ../dashboard/frontend
-npm run prepare ( Optional )
-npm run dev
-```
-
-6. Access the dashboard in your browser:
-
-```
-http://localhost:5173
-```
+* **No personal identifiers by default** — the tracker collects aggregated, non-identifying metadata.
+* **Transport security** — HTTPS everywhere is required for production.
+* **Scoped API keys** — site-level keys limit access to a single site’s events.
+* **Key rotation & secrets management** — rotation procedures and vault-backed secrets are recommended before production usage.
+* **Rate limiting & abuse protection** — Collector enforces quotas per API key and per client IP to protect resources.
 
 ---
 
-### Usage
+## Development & team workflow (where to start)
 
-#### Embedding the Tracker
+This project is intentionally modular so three people can work independently and integrate clearly:
 
-After recieving login credentials from the 4Insights dashboard website, you will
-receive a **public site token** i.e `public_abc123`. Embed the following snippet
-in your website (entry `html` file / component):
+* **DB owner**: implements persistent storage adapters and migration scripts (Collector and MembersAuth should accept a pluggable storage adapter).
+* **MembersAuth owner**: builds the production authentication service (token issuance, introspection, user/team management).
+* **Integrator (project lead)**: maintains Demo Auth, Collector glue, BFF integration, and overall system design.
 
-```html
-<script
-  async
-  src="https://4insights.onrender.com/tracker.js"
-  data-site="public_abc123"
-></script>
-```
+Recommended first steps for contributors (high level):
 
-The `tracker` will `automatically send` pageview events to your Collector API.
-`No
-configuration` is required unless you want to track additional events like
-clicks or custom interactions.
-
-#### Viewing Analytics
-
-1. Start the dashboard and collector as described in the Quick Start section.
-2. Open the dashboard in your browser at `http://localhost:5173`.
-3. The dashboard will automatically display:
-
-   - Total events count
-   - Total pageviews count
-   - Top paths with view counts
-4. Use the refresh button to get updated metrics.
+1. Read component READMEs in `/collector`, `/auth`, and `/dashboard`.
+2. Run the demo locally and generate a temporary API key via Demo Auth.
+3. Use the tracker snippet on a local site/page to verify events are delivered to Collector.
 
 ---
 
-### Event Types & Payloads
+## Roadmap (prioritized)
 
-The tracker currently supports pageview events with the following structure:
+**P0 (short-term, production safety)**
 
-```json
-{
-  "type": "pageview",
-  "userId": "id-abc123",
-  "sessionId": "id-def456",
-  "page": "Home Page",
-  "referrer": "https://google.com",
-  "timestamp": "2025-01-15T12:00:00.000Z",
-  "userAgent": "Mozilla/5.0...",
-  "language": "en-US",
-  "screen": "1366x768",
-  "timezone": "America/New_York",
-  "metadata": {
-    "url": "http://localhost:5173/",
-    "path": "/",
-    "host": "localhost:5173",
-    "hash": "",
-    "query": "",
-    "routeParams": {}
-  }
-}
-```
+* NDJSON atomic write + rotation + retention or pluggable DB adapter.
+* Rate limiting (per API key & per IP).
+* Auth adapters: refactor demo auth into a pluggable interface.
+* CI and test coverage for core services.
 
-Currently supported event types:
+**P1 (important UX & operations)**
 
-- **pageview** – triggered when a page loads or route changes in SPAs.
+* Schema-based payload validation and clearer tracker contract docs.
+* Export capabilities (CSV / NDJSON) in dashboard.
+* Prometheus-style metrics and example Grafana dashboards.
 
-Future event types (not yet implemented):
+**P2 (monetization & teams)**
 
-- **click** – triggered when a user interacts with a page element.
-- **custom** – optional, developer-defined events.
-
-All events are **anonymous**, and any extra metadata should **not include
-personal information**.
+* Members Auth (full production implementation), RBAC and team seats.
+* Billing and plan enforcement (retention/ingestion limits per tier).
+* Webhooks, integrations, and scaling improvements (queueing, workers).
 
 ---
 
-### Data Storage
+## Monetization strategy (brief)
 
-**Current Implementation (File-based)**
+Start with a freemium model that leverages the demo fast-onboarding flow:
 
-The system currently uses file-based storage for development:
+* **Free tier**: demo keys, short retention, limited ingestion rate.
+* **Paid tiers**: longer retention, higher ingestion, team seats, exports, webhooks, and dedicated SLAs.
 
-- **Events**: Stored in `collector/data/events.ndjson` (Newline Delimited JSON)
-- **Sites**: Stored in `collector/data/sites.json` (JSON array)
-
-**Future Database Structure**
-
-When migrated to a database, the structure will include:
-
-**Sites Table**
-
-- `id` – Primary key
-- `name` – Name of the website
-- `public_token` – Token used by tracker
-- `retention_days` – Data retention period
-- `created_at` – Timestamp
-
-**Events Table**
-
-- `id` – Primary key
-- `site_id` – Foreign key to site
-- `type` – Event type
-- `path` – Page path
-- `referrer` – Optional referrer
-- `screen_w` / `screen_h` – Screen size
-- `meta` – Optional JSON metadata
-- `timestamp` – Event time
-- `received_at` – Server receipt time
-
----
-### Repo Layout
-
-```
-collector/
-  main.ts                 # Deno 2 HTTP server with CORS support
-  types.ts                # Shared types for events and metrics
-  utils/
-    storage.ts            # File-based event storage (NDJSON) with metrics aggregation
-    validator.ts          # Runtime validation for incoming events
-  routes/                 # Modular route handlers
-    admin.ts              # Site management endpoints
-    batch.ts              # Batch event collection
-    collect.ts            # Event collection endpoint
-    metrics.ts            # Metrics aggregation endpoint
-  tests/
-    collector.test.ts     # Basic collector tests
-  data/                   # File-based data storage
-    events.ndjson         # Event data (append-only)
-    sites.json            # Site configuration
-
-tracker/
-  index.ts                # TypeScript tracker with SPA support
-  types.ts                # Tracker-specific types and interfaces
-  build/
-    tracker.js            # Built tracker bundle for browsers
-  tests/
-    tracker.test.ts       # Tracker functionality tests
-
-dashboard/                # Dashboard system (frontend + backend)
-  frontend/               # SvelteKit application (UI)
-    src/
-      routes/
-        +page.svelte      # Main dashboard with metrics display
-        +layout.svelte    # App layout
-        Header.svelte     # App header
-        about/            # About page
-    package.json          # SvelteKit dependencies
-  backend/                # Dashboard Backend (BFF) - Deno std
-    main.ts               # HTTP server with CORS and routes
-    services/
-      AuthClient.ts       # Calls auth /demo/verify to extract apiKey
-      MetricsService.ts   # Proxies metrics to collector (x-api-key)
-    utils/
-      Config.ts           # Env config (ports, base URLs)
-    types.ts              # Local backend types
-
-auth/                     # Authentication system
-  demo/                   # Demo authentication implementation
-    server/
-      main.ts             # Auth server with Deno.serve
-      CredentialService.ts # API key and credential management
-      SessionService.ts   # Token generation and validation
-      AuthMiddleware.ts   # HTTP authentication middleware
-      types.ts            # Server-specific types
-      utils/
-        Config.ts         # Configuration management
-        InMemoryCredentialStorage.ts # Temporary storage
-      tests/
-        auth.test.ts      # Integration tests
-    client/
-      components/
-        demo.html         # Interactive demo client
-    README.md             # Auth system documentation
-  proper/                 # Future production auth system
-    coming-soon/
-  shared/
-    interfaces/
-      types.ts            # Shared authentication interfaces
-
-deno.json                 # Deno configuration and tasks
-.gitignore               # Git ignore patterns
-```
-
-### Collector Endpoints
-
-- `POST /4insights/collect` — Accepts an array of events (e.g., pageviews)
-- `POST /4insights/batch` — Alias for `/4insights/collect` (batch processing)
-- `GET /4insights/metrics` — Basic overview metrics (total events, total pageviews, top paths)
-- `POST /4insights/admin/sites` — Create new sites (admin endpoint)
-- `OPTIONS` — CORS preflight support for all endpoints
-
-Example request body for `/4insights/collect`:
-
-```json
-[
-  {
-    "type": "pageview",
-    "userId": "id-abc",
-    "sessionId": "id-def",
-    "page": "Home",
-    "referrer": "",
-    "timestamp": "2025-10-15T12:00:00.000Z",
-    "userAgent": "Mozilla/5.0 ...",
-    "language": "en-US",
-    "screen": "1366x768",
-    "timezone": "UTC",
-    "metadata": {
-      "url": "http://localhost:5173/",
-      "path": "/",
-      "host": "localhost:5173",
-      "hash": "",
-      "query": "",
-      "routeParams": {}
-    }
-  }
-]
-```
-
-### Tracker Usage
-
-Embed the built tracker and pass your API key:
-
-```html
-<script src="/tracker.js" data-key="123abc" async></script>
-```
-
-Or initialize manually:
-
-```html
-<script>
-  new InsightTracker({ apiKey: '123abc', endpoint: 'http://localhost:8000/4insights/collect' });
-  // For local dev, ensure CORS or load tracker from the same origin as collector
-  // Default endpoint is "/4insights/collect"
-  // The collector exposes metrics at "/4insights/metrics"
-  // Start collector with:
-  //   deno run --allow-net --allow-read --allow-write collector/main.ts
-  // Then open your app and include the script above.
-  // Navigate around to see pageview events recorded.
-  // Query metrics at http://localhost:8000/4insights/metrics
-}</script>
-```
-### How to Run (Quick Start)
-
-1) Start the Collector (Deno 2):
-
-```bash
-deno run --allow-net --allow-read --allow-write collector/main.ts
-```
-
-The collector listens on `http://localhost:8000` and exposes:
-- `POST /4insights/collect` (and `/4insights/batch`) to receive events
-- `GET /4insights/metrics` for aggregated metrics
-- `POST /4insights/admin/sites` to create a site (name in JSON)
-
-2) Run the Dashboard (SvelteKit):
-
-```bash
-cd dashboard/frontend
-npm install
-npm run dev
-# open http://localhost:5173
-```
-
-The homepage fetches metrics from the BFF at `http://localhost:8010/dashboard/metrics`.
-
-3) Use the Tracker on a web page:
-
-Option A (auto-init via script tag):
-
-```html
-<script src="/tracker.js" data-key="public_demo" async></script>
-```
-
-Option B (manual init in your app):
-
-```html
-<script type="module">
-  import { InsightTracker } from '/path/to/tracker/index.ts';
-  new InsightTracker({ apiKey: 'public_demo', endpoint: 'http://localhost:8000/4insights/collect' });
-</script>
-```
-
-4) Start the Auth Demo Server (Optional):
-
-```bash
-cd auth/demo/server
-deno run --allow-net --allow-env main.ts
-```
-
-The auth server runs on `http://localhost:8001` and provides:
-- `POST /demo/credentials` to generate API keys
-- `POST /demo/sessions` to create authentication sessions
-- `GET /demo/verify` to verify tokens
-- `DELETE /demo/sessions` to logout
-
-Test the auth system:
-```bash
-deno run --allow-net --allow-env auth/demo/server/tests/auth.test.ts
-```
-
-Note: The provided `tracker/build/tracker.js` is a ready-to-use browser bundle snapshot. You may also bundle `tracker/index.ts` yourself using your preferred build tool.
-
-### Developer Workflow (Project Requirements)
-
-- Keep interfaces and types in a dedicated `types.ts` within each directory.
-- Add clear, beginner-friendly docstrings and comments.
-- Commit in small, descriptive chunks after each functional change.
-- Always run formatting, type-checks, and builds after changes:
-
-```bash
-# Format and Deno type-check (collector)
-deno fmt && deno check collector/ tracker/ auth/
-
-# Dashboard check/build
-cd dashboard && npm run check && npm run build
-```
----
-
-<!-- ### Roadmap
-
-**Phase 1 (MVP)**
-
-* Pageview tracking
-* Collector API for single events
-* SvelteKit dashboard for site analytics
-* CSV export
-
-**Phase 2 (Next)**
-
-* Batch event submission
-* Rate limiting and sampling
-* Advanced dashboard features (funnels, sessions)
-
-**Phase 3 (Future/Premium)**
-
-* Team management and role-based access
-* Webhooks and notifications
-* Billing, quotas, and self-hosted deployment
-
---- -->
-
-### Contributing
-
-Contributions are encouraged! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature-name-here`)
-3. Commit your changes (`git commit -m "Add a descriptive msg here"`)
-4. Push to your branch (`git push origin feature-name-here`)
-5. Create a pull request
-
-Please respect the **privacy-first principles** when adding features.
+Build payment and plan-enforcement into the BFF layer so storage and ingestion remain pluggable beneath billing rules.
 
 ---
 
-### License
+## Contribution guidelines (short)
 
-This project is semi-open source and available under the **MIT License**. You
-may use, modify, and distribute it freely, while maintaining strong attribution.
+* Follow the code style and keep changes small and well-tested.
+* Open PRs for each logical change and include tests for new behavior. CI runs basic Deno and frontend checks.
+* For changes touching storage or auth, prefer an adapter/interface-first approach to preserve modularity.
 
 ---
+
+## Where to get help
+
+Open an issue in this repository for design questions or to propose changes to architecture. The repository contains component-specific READMEs with development notes and configuration details.
+
+---
+
+## License
+
+This project uses the MIT license. See the `LICENSE` file for details.
+
+---
+
+*Last updated: see repository history for the exact commit.*
+

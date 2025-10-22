@@ -512,6 +512,6 @@ Please respect the **privacy-first principles** when adding features.
 ### License
 
 This project is semi-open source and available under the **MIT License**. You
-may use, modify, and distribute it freely, while maintaining attribution.
+may use, modify, and distribute it freely, while maintaining strong attribution.
 
 ---

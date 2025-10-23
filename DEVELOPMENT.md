@@ -4,7 +4,7 @@ This document summarizes the minimal, repeatable steps for local development and
 CI. It keeps Deno and Node responsibilities separate and provides quick commands
 to run the services, tests, and CI.
 
-Summary
+Quick Summary
 
 - Backend services (auth, collector, dashboard/backend) run on Deno.
 - Frontend (SvelteKit) runs on Node (npm / Vite).

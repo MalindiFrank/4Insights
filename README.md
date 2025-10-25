@@ -1,6 +1,6 @@
 # 4Insights
 
-4Insights helps website owners understand how people use their sites — which pages are popular, how visitors move between pages, and what content works best — without spying on anyone. It’s designed so a non-technical person (or a curious 16‑year‑old) can get started quickly: you add a tiny snippet of code to your site, and the system collects anonymous, summary information that helps you improve your site.
+4Insights helps website owners understand how people use their sites — which pages are popular, how visitors move between pages, and what content works best — without spying on anyone. It’s designed so a person can get started quickly: you add a tiny snippet of code to your site, and the system collects anonymous, summary information that helps you improve your site.
 
 A lightweight, privacy-first web analytics platform designed to be simple to operate, easy to extend, and production-ready when the team is ready to scale and monetize. 4Insights is built with the goals of clarity, maintainability, and minimal runtime dependencies — a showcase of system integration best-practices.
 

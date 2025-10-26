@@ -25,8 +25,8 @@ FROM node:20-alpine3.18
 WORKDIR /app
 # Copy package.json and lock file
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
-# Install dependencies (needed for npm preview to work)
-RUN npm ci --omit=dev --silent
+# Install all dependencies (npm preview needs vite which is a dev dependency)
+RUN npm ci --silent
 # Copy the built SvelteKit app
 COPY --from=builder /app/build ./build
 

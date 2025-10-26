@@ -69,3 +69,7 @@ tracker/.env
 # package-lock.json, yarn.lock, pnpm-lock.yaml
 *.tsbuildinfo
 
+
+#4frank
+.4frank/*
+/.4frank

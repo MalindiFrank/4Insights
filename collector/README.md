@@ -25,10 +25,15 @@ cd collector
 deno run --allow-net --allow-read --allow-write main.ts
 ```
 
-- Collect events (POST): `/4insights/collect` or `/4insights/batch`
+## API Endpoints
+
+- **Health Check** (GET): `/health`
+  - Returns service status and timestamp
+  - Used by deployment platforms (e.g., Render) for health checks
+- **Collect events** (POST): `/4insights/collect` or `/4insights/batch`
   - Headers: `Content-Type: application/json`, optional `X-API-Key: <apiKey>`
   - Body: JSON array of events
-- Metrics (GET): `/4insights/metrics`
+- **Metrics** (GET): `/4insights/metrics`
   - Optional header `X-API-Key` to scope metrics
 
 ## API Key Scoping

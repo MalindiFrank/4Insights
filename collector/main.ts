@@ -79,6 +79,17 @@ async function handleMetrics(req: Request): Promise<Response> {
   return json(overview, 200, corsHeaders(req.headers.get("origin")));
 }
 
+function handleHealth(): Response {
+  return json(
+    {
+      ok: true,
+      service: "4insights-collector",
+      timestamp: new Date().toISOString(),
+    },
+    200,
+  );
+}
+
 function notFound(): Response {
   return new Response("Not Found", { status: 404 });
 }
@@ -91,6 +102,9 @@ Deno.serve({ port: 8000 }, (req) => {
       status: 204,
       headers: corsHeaders(req.headers.get("origin")),
     });
+  }
+  if (req.method === "GET" && url.pathname === "/health") {
+    return handleHealth();
   }
   if (
     req.method === "POST" &&

@@ -21,13 +21,8 @@ export default defineConfig({
 	optimizeDeps: {
 		include: ['@sveltejs/kit']
 	},
-	// Allow preview server to accept requests from Render and localhost
+	// Allow preview server to accept requests from any host
 	preview: {
-		allowedHosts: [
-			'localhost',
-			'127.0.0.1',
-			'fourinsights-dashboard-frontend.onrender.com',
-			'*.onrender.com'
-		]
+		allowedHosts: true
 	}
 });

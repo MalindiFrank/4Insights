@@ -23,8 +23,10 @@ COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/trac
 ### Production stage (Node.js)
 FROM node:20-alpine3.18
 WORKDIR /app
-# Copy package.json and lock file for npm preview command
+# Copy package.json and lock file
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
+# Install dependencies (needed for npm preview to work)
+RUN npm ci --omit=dev --silent
 # Copy the built SvelteKit app
 COPY --from=builder /app/build ./build
 

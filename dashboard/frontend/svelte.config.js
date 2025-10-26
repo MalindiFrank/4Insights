@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -16,17 +16,7 @@ const config = {
 			strict: true,
 			// Add cache headers for images and other assets
 			precompress: true,
-			headers: {
-				'/assets': {
-					'Cache-Control': 'public, max-age=31536000, immutable'
-				},
-				'/images': {
-					'Cache-Control': 'public, max-age=31536000, immutable'
-				},
-				'/.*(jpg|jpeg|png|gif|svg|woff2?)$': {
-					'Cache-Control': 'public, max-age=31536000, immutable'
-				}
-			}
+			fallback: 'index.html'
 		})
 	}
 };

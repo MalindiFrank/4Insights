@@ -20,5 +20,14 @@ export default defineConfig({
 	// Optimize images during build
 	optimizeDeps: {
 		include: ['@sveltejs/kit']
+	},
+	// Allow preview server to accept requests from Render and localhost
+	preview: {
+		allowedHosts: [
+			'localhost',
+			'127.0.0.1',
+			'fourinsights-dashboard-frontend.onrender.com',
+			'*.onrender.com'
+		]
 	}
 });

@@ -6,7 +6,8 @@ COPY deno.json deno.lock ./
 # Cache dependencies first using the root deno.json config
 RUN deno cache --config /app/deno.json --lock /app/deno.lock /app/tracker/build.ts
 # Use build.ts script which is more reliable than deno bundle in Docker
-RUN deno run --allow-read --allow-write --allow-net --allow-env --config /app/deno.json --lock /app/deno.lock tracker/build.ts --outDir=tracker/build
+# Need --allow-run to spawn deno bundle subprocess
+RUN deno run --allow-read --allow-write --allow-net --allow-env --allow-run --config /app/deno.json --lock /app/deno.lock tracker/build.ts --outDir=tracker/build
 
 ### Build stage (Node) - builds the frontend site
 FROM node:20-alpine3.18 AS builder

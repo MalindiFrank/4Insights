@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -8,9 +8,10 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// Use the auto adapter which detects the environment
-		// For static builds in Docker, it will use the static adapter
-		adapter: adapter()
+		// Use the static adapter for serving from nginx
+		adapter: adapter({
+			fallback: 'index.html'
+		})
 	}
 };
 

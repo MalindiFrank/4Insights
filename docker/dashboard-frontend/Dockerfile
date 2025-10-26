@@ -32,4 +32,5 @@ COPY --from=builder /app/build ./build
 
 EXPOSE 5173
 # Run SvelteKit preview server using npm preview
+# The vite.config.ts includes allowedHosts configuration for the Render domain
 CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]

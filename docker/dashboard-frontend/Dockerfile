@@ -14,19 +14,22 @@ FROM node:20-alpine3.18 AS builder
 WORKDIR /app
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json* ./
 COPY dashboard/frontend/ ./
-# Use npm install to update lock file with adapter-static dependency
-RUN npm install --silent && npm run build
+RUN npm ci --silent && npm run build
 
 # Copy the tracker bundle produced by the Deno stage into the built site
 RUN mkdir -p /app/build/static || true
 COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/tracker.js
 
-### Production stage (nginx)
-FROM nginx:1.25.3-alpine3.18-slim
-# Copy nginx configuration for SPA routing
-COPY docker/dashboard-frontend/nginx.conf /etc/nginx/conf.d/default.conf
-# Copy built frontend files
-COPY --from=builder /app/build /usr/share/nginx/html
+### Production stage (Node.js)
+FROM node:20-alpine3.18
+WORKDIR /app
+# Copy built frontend files from builder stage
+COPY --from=builder /app/build ./build
+# Copy package.json for dependencies
+COPY dashboard/frontend/package.json ./
+# Install only production dependencies
+RUN npm ci --omit=dev --silent
 
 EXPOSE 5173
-CMD ["nginx", "-g", "daemon off;"]
+# Use SvelteKit's built-in preview server
+CMD ["node", "-e", "import('./build/index.js').then(m => m.default({ port: 5173 }))"]

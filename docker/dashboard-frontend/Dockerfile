@@ -20,13 +20,16 @@ RUN npm ci --silent && npm run build
 RUN mkdir -p /app/build/static || true
 COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/tracker.js
 
-### Production stage (nginx)
-FROM nginx:1.25.3-alpine3.18-slim
-# Copy nginx configuration for SPA routing
-COPY docker/dashboard-frontend/nginx.conf /etc/nginx/conf.d/default.conf
-# Copy built frontend files from builder stage
-# SvelteKit builds to /app/build with adapter-auto
-COPY --from=builder /app/build /usr/share/nginx/html
+### Production stage (Node.js)
+FROM node:20-alpine3.18
+WORKDIR /app
+# Copy package.json for production dependencies
+COPY dashboard/frontend/package.json ./
+# Install only production dependencies
+RUN npm ci --omit=dev --silent
+# Copy the built SvelteKit app
+COPY --from=builder /app/build ./build
 
 EXPOSE 5173
-CMD ["nginx", "-g", "daemon off;"]
+# Run SvelteKit preview server
+CMD ["node", "-e", "import('./build/index.js').then(m => m.default({ port: 5173 }))"]

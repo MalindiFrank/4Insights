@@ -25,8 +25,8 @@ FROM nginx:1.25.3-alpine3.18-slim
 # Copy nginx configuration for SPA routing
 COPY docker/dashboard-frontend/nginx.conf /etc/nginx/conf.d/default.conf
 # Copy built frontend files from builder stage
-# adapter-auto outputs to .svelte-kit/output/client for static files
-COPY --from=builder /app/.svelte-kit/output/client /usr/share/nginx/html
+# SvelteKit builds to /app/build with adapter-auto
+COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 5173
 CMD ["nginx", "-g", "daemon off;"]

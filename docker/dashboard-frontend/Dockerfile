@@ -3,10 +3,10 @@ FROM denoland/deno:2.5.4 AS tracker-builder
 WORKDIR /app
 COPY tracker/ ./tracker/
 COPY deno.json deno.lock ./
-# Cache dependencies first to ensure they are available
-RUN deno cache --config deno.json tracker/build.ts
+# Cache dependencies first using the root deno.json config
+RUN deno cache --config /app/deno.json --lock /app/deno.lock /app/tracker/build.ts
 # Use build.ts script which is more reliable than deno bundle in Docker
-RUN deno run --allow-read --allow-write --allow-net --allow-env tracker/build.ts --outDir=tracker/build
+RUN deno run --allow-read --allow-write --allow-net --allow-env --config /app/deno.json --lock /app/deno.lock tracker/build.ts --outDir=tracker/build
 
 ### Build stage (Node) - builds the frontend site
 FROM node:20-alpine3.18 AS builder

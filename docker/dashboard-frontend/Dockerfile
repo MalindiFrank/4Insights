@@ -23,9 +23,11 @@ COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/trac
 ### Production stage (Node.js)
 FROM node:20-alpine3.18
 WORKDIR /app
+# Copy package.json and lock file for npm preview command
+COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
 # Copy the built SvelteKit app
 COPY --from=builder /app/build ./build
 
 EXPOSE 5173
-# Run SvelteKit preview server
-CMD ["node", "-e", "import('./build/index.js').then(m => m.default({ port: 5173 }))"]
+# Run SvelteKit preview server using npm preview
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]

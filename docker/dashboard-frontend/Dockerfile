@@ -22,6 +22,9 @@ COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/trac
 
 ### Production stage (nginx)
 FROM nginx:1.25.3-alpine3.18-slim
+# Copy nginx configuration for SPA routing
+COPY docker/dashboard-frontend/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built frontend files
 COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 5173

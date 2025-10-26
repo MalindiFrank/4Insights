@@ -4,7 +4,8 @@ WORKDIR /app
 COPY tracker/ ./tracker/
 COPY deno.json deno.lock ./
 # Use build.ts script which is more reliable than deno bundle in Docker
-RUN deno run --allow-read --allow-write tracker/build.ts --outDir=tracker/build
+# Need --allow-net to fetch JSR dependencies during build
+RUN deno run --allow-read --allow-write --allow-net tracker/build.ts --outDir=tracker/build
 
 ### Build stage (Node) - builds the frontend site
 FROM node:20-alpine3.18 AS builder

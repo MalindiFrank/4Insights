@@ -14,8 +14,7 @@ FROM node:20-alpine3.18 AS builder
 WORKDIR /app
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json* ./
 COPY dashboard/frontend/ ./
-# Use npm install to update lock file with new dependencies
-RUN npm install --silent && npm run build
+RUN npm ci --silent && npm run build
 
 # Copy the tracker bundle produced by the Deno stage into the built site
 RUN mkdir -p /app/build/static || true

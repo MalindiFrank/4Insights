@@ -20,7 +20,9 @@ async function ensureDir(path: string) {
 
 async function bundle() {
   console.log(`Bundling tracker entry: ${entry}`);
-  const targetPath = outDir.endsWith(".js") ? outDir : join(outDir, "tracker.js");
+  const targetPath = outDir.endsWith(".js")
+    ? outDir
+    : join(outDir, "tracker.js");
   await ensureDir(dirname(targetPath));
 
   const trackerDir = repoRoot;

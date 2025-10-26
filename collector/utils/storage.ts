@@ -3,7 +3,12 @@
 // FileEventStore persists events in a newline-delimited JSON file (NDJSON).
 // It's easy to inspect and suitable for small deployments or development.
 // FileSiteStore provides a minimal site registry for admin functionality.
-import type { AnyEvent, MetricsOverview, Site, PageViewEvent } from "../types.ts";
+import type {
+  AnyEvent,
+  MetricsOverview,
+  PageViewEvent,
+  Site,
+} from "../types.ts";
 
 type StoredEvent = AnyEvent & { _apiKey?: string };
 type StoredPageViewEvent = PageViewEvent & { _apiKey?: string };

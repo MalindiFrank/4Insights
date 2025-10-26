@@ -16,8 +16,8 @@ image build, so no pre-commit of generated bundles is required.
 
 ## Environment variables (example)
 
-You'll provide env variables or .env file on the hosting platforms. The important
-variables are:
+You'll provide env variables or .env file on the hosting platforms. The
+important variables are:
 
 - Dashboard backend (Deno):
   - DASHBOARD_BACKEND_PORT (default 8010)
@@ -95,5 +95,3 @@ npm install
 npx playwright install
 npm run test:e2e
 ```
-
-

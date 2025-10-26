@@ -6,10 +6,12 @@ import { send } from "../send.ts";
 const mockFetch = spy((input: string | URL | Request, _init?: RequestInit) => {
   const url = input instanceof Request ? input.url : String(input);
   assert(url === "http://localhost:8080/collect");
-  return Promise.resolve(new Response(JSON.stringify({ success: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  }));
+  return Promise.resolve(
+    new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    }),
+  );
 });
 
 // Replace global fetch with mock
@@ -60,9 +62,9 @@ Deno.test("event sending", async () => {
       query: "",
     },
   };
-  
+
   await send("test_key_123", testEvent);
-  
+
   assertSpyCalls(mockFetch, 1);
   assertSpyCall(mockFetch, 0, {
     args: [

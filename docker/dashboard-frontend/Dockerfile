@@ -28,7 +28,9 @@ COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
 # Install all dependencies (adapter-node needs all dependencies to run)
 RUN npm ci --silent
 # Copy the built SvelteKit app with adapter-node
-COPY --from=builder /app/.svelte-kit/output ./build
+# adapter-node outputs to .svelte-kit/output with server/ and client/ subdirectories
+COPY --from=builder /app/.svelte-kit/output/server ./build
+COPY --from=builder /app/.svelte-kit/output/client ./build/client
 
 EXPOSE 5173
 # Run SvelteKit server using adapter-node

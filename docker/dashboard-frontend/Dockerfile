@@ -37,4 +37,4 @@ EXPOSE 3000
 # The build directory contains the Node.js entry point at index.js
 # adapter-node uses port 3000 by default (can be overridden with PORT env var)
 ENV PORT=3000
-CMD ["node", "build/index.js"]
+CMD ["node", "build/server/index.js"]

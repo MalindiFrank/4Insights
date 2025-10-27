@@ -28,14 +28,13 @@ WORKDIR /app
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
 # Install all dependencies (adapter-node needs all dependencies to run)
 RUN npm ci --silent
-# Copy the built SvelteKit app with adapter-node
-# adapter-node outputs to .svelte-kit/output with server/ and client/ subdirectories
-COPY --from=builder /app/.svelte-kit/output/server ./build
-COPY --from=builder /app/.svelte-kit/output/client ./build/client
+# Copy the entire built SvelteKit app with adapter-node
+# adapter-node outputs to .svelte-kit/output which contains the complete server
+COPY --from=builder /app/.svelte-kit/output ./build
 
 EXPOSE 3000
 # Run SvelteKit server using adapter-node
-# The build directory contains the server entry point
+# The build directory contains the Node.js entry point at index.js
 # adapter-node uses port 3000 by default (can be overridden with PORT env var)
 ENV PORT=3000
 CMD ["node", "build/index.js"]

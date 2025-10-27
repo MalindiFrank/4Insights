@@ -13,6 +13,7 @@ RUN deno run --allow-read --allow-write --allow-net --allow-env --allow-run --co
 FROM node:20-alpine3.18 AS builder
 WORKDIR /app
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json* ./
+COPY dashboard/frontend/.env* ./
 COPY dashboard/frontend/ ./
 RUN npm ci --silent && npm run build
 

@@ -17,20 +17,20 @@ COPY dashboard/frontend/ ./
 RUN npm ci --silent && npm run build
 
 # Copy the tracker bundle produced by the Deno stage into the built site
-RUN mkdir -p /app/build/static || true
-COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/static/tracker.js
+RUN mkdir -p /app/.svelte-kit/output/client/static || true
+COPY --from=tracker-builder /app/tracker/build/tracker.js /app/.svelte-kit/output/client/static/tracker.js
 
 ### Production stage (Node.js)
 FROM node:20-alpine3.18
 WORKDIR /app
 # Copy package.json and lock file
 COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
-# Install all dependencies (npm preview needs vite which is a dev dependency)
+# Install all dependencies (adapter-node needs all dependencies to run)
 RUN npm ci --silent
-# Copy the built SvelteKit app
-COPY --from=builder /app/build ./build
+# Copy the built SvelteKit app with adapter-node
+COPY --from=builder /app/.svelte-kit/output ./build
 
 EXPOSE 5173
-# Run SvelteKit preview server using npm preview
-# The vite.config.ts includes allowedHosts configuration for the Render domain
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
+# Run SvelteKit server using adapter-node
+# The build directory contains the server entry point
+CMD ["node", "build/index.js"]

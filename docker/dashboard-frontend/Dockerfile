@@ -32,7 +32,9 @@ RUN npm ci --silent
 COPY --from=builder /app/.svelte-kit/output/server ./build
 COPY --from=builder /app/.svelte-kit/output/client ./build/client
 
-EXPOSE 5173
+EXPOSE 3000
 # Run SvelteKit server using adapter-node
 # The build directory contains the server entry point
+# adapter-node uses port 3000 by default (can be overridden with PORT env var)
+ENV PORT=3000
 CMD ["node", "build/index.js"]

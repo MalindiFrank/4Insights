@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { qrcode } from 'vite-plugin-qrcode'
 
+const extra = process.env.__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS;
+
 export default defineConfig({
 	plugins: [sveltekit(), qrcode()],
 	build: {
@@ -23,6 +25,7 @@ export default defineConfig({
 	},
 	// Allow preview server to accept requests from any host
 	preview: {
-		allowedHosts: true
-	}
+    host: true,
+    allowedHosts: extra ? extra.split(',').map(h => h.trim()) : []
+  }
 });

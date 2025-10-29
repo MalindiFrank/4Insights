@@ -119,27 +119,6 @@ Recommended first steps for contributors (high level):
 - Export capabilities (CSV / NDJSON) in dashboard.
 - Prometheus-style metrics and example Grafana dashboards.
 
-**P2 (monetization & teams)**
-
-- Members Auth (full production implementation), RBAC and team seats.
-- Billing and plan enforcement (retention/ingestion limits per tier).
-- Webhooks, integrations, and scaling improvements (queueing, workers).
-
----
-
-## Monetization strategy (brief)
-
-Start with a freemium model that leverages the demo fast-onboarding flow:
-
-- **Free tier**: demo keys, short retention, limited ingestion rate.
-- **Paid tiers**: longer retention, higher ingestion, team seats, exports,
-  webhooks, and dedicated SLAs.
-
-Build payment and plan-enforcement into the BFF layer so storage and ingestion
-remain pluggable beneath billing rules.
-
----
-
 ## Contribution guidelines (short)
 
 - Follow the code style and keep changes small and well-tested.

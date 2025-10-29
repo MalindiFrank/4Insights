@@ -13,6 +13,16 @@ RUN deno run --allow-read --allow-write --allow-net --allow-env --allow-run --co
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# Accept build arguments for Vite environment variables
+ARG VITE_DASHBOARD_BACKEND_URL=http://localhost:8010
+ARG VITE_AUTH_SERVICE_URL=http://localhost:8001
+ARG VITE_COLLECTOR_URL=http://localhost:8000
+
+# Set them as environment variables for the build
+ENV VITE_DASHBOARD_BACKEND_URL=$VITE_DASHBOARD_BACKEND_URL
+ENV VITE_AUTH_SERVICE_URL=$VITE_AUTH_SERVICE_URL
+ENV VITE_COLLECTOR_URL=$VITE_COLLECTOR_URL
+
 # Copy package files from the NEW frontend
 COPY dashboard/frontend-new/package.json dashboard/frontend-new/package-lock.json ./
 

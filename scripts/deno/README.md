@@ -13,7 +13,7 @@ Important separation (Deno vs Node)
 
 - This Deno script intentionally does NOT run `npm` or any Node-based tooling.
   Keep Deno tasks (format, check, Deno-based tests) in Deno.
-- Run Node-based tools (Playwright) separately inside the `dashboard/frontend`
+- Run Node-based tools (Playwright) separately inside the `dashboard/frontend-new 
   folder using Node/npm. This avoids cross-runtime permission and environment
   issues.
 
@@ -44,7 +44,7 @@ What `verify_all.ts` does
 - Bundles the tracker using the Deno-only bundler at `tracker/build.ts` (outputs
   `tracker/build/tracker.js` by default)
 - Optionally invokes the frontend `npm ci` and `npm run build` from
-  `dashboard/frontend` when `--with-frontend` is passed
+  `dashboard/frontend-new  when `--with-frontend` is passed
 
 Notes and rationale
 

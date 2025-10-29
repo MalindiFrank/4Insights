@@ -78,7 +78,7 @@ Notes for Render:
 Vercel is a good fit for the frontend static site. The backend and collector
 must be deployed separately (Render or other). Steps:
 
-1. Build locally or in CI: `npm run build` in `dashboard/frontend`.
+1. Build locally or in CI: `npm run build` in `dashboard/frontend-new .
 2. Upload/Deploy the built `build/` directory to Vercel as a static site.
 3. Configure environment variables on Vercel as `VITE_...` values.
 
@@ -87,7 +87,7 @@ host, the Dockerfile is ready and will produce a static site served by nginx.
 
 ## CI / E2E
 
-- Playwright tests are in `dashboard/frontend/tests`. To run locally:
+- Playwright tests are in `dashboard/frontend-new tests`. To run locally:
 
 ```bash
 cd dashboard/frontend

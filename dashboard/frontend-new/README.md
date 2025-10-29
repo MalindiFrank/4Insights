@@ -30,7 +30,7 @@ The dashboard is built with:
 1. Copy example env and edit if needed:
 
 ```bash
-cp dashboard/frontend/.env.example dashboard/frontend/.env
+cp dashboard/frontend-new/.env.example dashboard/frontend-new/.env
 ```
 
 2. Install dependencies and start dev server:
@@ -57,11 +57,11 @@ npm run preview
 
 ## Configuration
 
-Use `dashboard/frontend/.env` (created from `.env.example`) to configure the
+Use `dashboard/frontend-new/.env` (created from `.env.example`) to configure the
 frontend. The SvelteKit app reads variables prefixed with `VITE_` via
 `import.meta.env`.
 
-Important variables (in `dashboard/frontend/.env`):
+Important variables (in `dashboard/frontend-new/.env`):
 
 - VITE_DASHBOARD_BACKEND_URL — URL of the dashboard backend BFF (default `http://localhost:8010`)
 

@@ -13,7 +13,7 @@ node scripts/node/run_playwright_ci.js
 Requirements:
 
 - Node.js installed (for runner and Playwright)
-- Playwright installed in `dashboard/frontend`
+- Playwright installed in `dashboard/frontend-new 
   (`npm install --save-dev @playwright/test` and `npx playwright install`)
 
 Notes:

@@ -19,10 +19,13 @@ const authClient = new AuthClient(config);
 const metricsService = new MetricsService(config);
 
 function corsHeaders(origin: string | null): HeadersInit {
+  // When using credentials, origin cannot be "*" - must be specific
+  const allowedOrigin = origin ?? "http://localhost:5173";
   return {
-    "Access-Control-Allow-Origin": origin ?? "*",
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Credentials": "true",
   };
 }
 

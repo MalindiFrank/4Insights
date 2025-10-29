@@ -1,3 +1,4 @@
-// since there's no dynamic data here, we can prerender
-// it so that it gets served as a static asset in production
-export const prerender = true;
+// Disable prerendering - this page requires runtime authentication
+// and makes dynamic API calls to load metrics
+export const prerender = false;
+export const ssr = false; // Client-side only for auth checks

@@ -26,8 +26,8 @@ backend:
 
 ## Run dashboard frontend (SvelteKit dev server)
 frontend:
-	@echo "Starting Dashboard Frontend (dashboard/frontend)..."
-	cd dashboard/frontend && npm install --no-audit --no-fund && npm run dev
+	@echo "Starting Dashboard Frontend (dashboard/frontend-new)..."
+	cd dashboard/frontend-new && npm install --no-audit --no-fund && npm run dev
 
 ## Format Deno code
 fmt:
@@ -43,8 +43,8 @@ check:
 
 ## Run Svelte checks for frontend
 svelte-check:
-	@echo "Running svelte-check for dashboard/frontend..."
-	cd dashboard/frontend && npm run check
+	@echo "Running svelte-check for dashboard/frontend-new..."
+	cd dashboard/frontend-new && npm run check
 
 ## Run comprehensive verification of Deno code
 verify:
@@ -76,7 +76,7 @@ dev-tmux:
 	@tmux split-window -h -t 4insights 'cd collector && deno run --allow-net --allow-read --allow-write main.ts'
 	@tmux split-window -v -t 4insights 'cd dashboard/backend && deno run --allow-net --allow-env main.ts'
 	@tmux select-pane -t 0
-	@tmux split-window -v -t 4insights 'cd dashboard/frontend && npm install --no-audit --no-fund && npm run dev'
+	@tmux split-window -v -t 4insights 'cd dashboard/frontend-new && npm install --no-audit --no-fund && npm run dev'
 	@tmux attach -t 4insights
 
 stop-dev-tmux:

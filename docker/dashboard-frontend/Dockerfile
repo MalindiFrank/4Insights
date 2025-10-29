@@ -9,32 +9,58 @@ RUN deno cache --config /app/deno.json --lock /app/deno.lock /app/tracker/build.
 # Need --allow-run to spawn deno bundle subprocess
 RUN deno run --allow-read --allow-write --allow-net --allow-env --allow-run --config /app/deno.json --lock /app/deno.lock tracker/build.ts --outDir=tracker/build
 
-### Build stage (Node) - builds the frontend site
-FROM node:20-alpine3.18 AS builder
+### Build stage (Node) - builds the NEW frontend site
+FROM node:20-alpine AS builder
 WORKDIR /app
-COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json* ./
-COPY dashboard/frontend/.env* ./
-COPY dashboard/frontend/ ./
-RUN npm ci --silent && npm run build
+
+# Copy package files from the NEW frontend
+COPY dashboard/frontend-new/package.json dashboard/frontend-new/package-lock.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy application source from the NEW frontend
+COPY dashboard/frontend-new/ ./
+
+# Build the SvelteKit app (creates /app/build directory)
+RUN npm run build
 
 # Copy the tracker bundle produced by the Deno stage into the built site
-RUN mkdir -p /app/.svelte-kit/output/client/static || true
-COPY --from=tracker-builder /app/tracker/build/tracker.js /app/.svelte-kit/output/client/static/tracker.js
+RUN mkdir -p /app/build/client/static || true
+COPY --from=tracker-builder /app/tracker/build/tracker.js /app/build/client/static/tracker.js
 
 ### Production stage (Node.js)
-FROM node:20-alpine3.18
+FROM node:20-alpine AS runner
 WORKDIR /app
-# Copy package.json and lock file
-COPY dashboard/frontend/package.json dashboard/frontend/package-lock.json ./
-# Install all dependencies (adapter-node needs all dependencies to run)
-RUN npm ci --silent
-# Copy the entire built SvelteKit app with adapter-node
-# adapter-node outputs to .svelte-kit/output which contains the complete server
-COPY --from=builder /app/.svelte-kit/output ./build
 
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S sveltekit -u 1001
+
+# Copy package files for production dependencies
+COPY dashboard/frontend-new/package.json dashboard/frontend-new/package-lock.json ./
+
+# Install production dependencies only
+RUN npm ci --omit=dev && \
+    npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder --chown=sveltekit:nodejs /app/build ./build
+COPY --from=builder --chown=sveltekit:nodejs /app/package.json ./
+
+# Switch to non-root user
+USER sveltekit
+
+# Expose the port SvelteKit runs on
 EXPOSE 3000
-# Run SvelteKit server using adapter-node
-# The build directory contains the Node.js entry point at index.js
-# adapter-node uses port 3000 by default (can be overridden with PORT env var)
-ENV PORT=3000
-CMD ["node", "build/server/index.js"]
+
+# Set environment variables
+ENV NODE_ENV=production \
+    PORT=3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start the application
+CMD ["node", "build"]

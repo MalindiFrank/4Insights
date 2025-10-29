@@ -9,7 +9,7 @@ Quick Summary
 - Backend services (auth, collector, dashboard/backend) run on Deno.
 - Frontend (SvelteKit) runs on Node (npm / Vite).
 - Browser E2E tests use Playwright (Node). Keep Playwright and Node tooling in
-  `dashboard/frontend`.
+  `dashboard/frontend-new`.
 
 Quick start (local)
 
@@ -30,13 +30,13 @@ cd collector && deno run --allow-net --allow-read --allow-write main.ts &
 # dashboard backend
 cd dashboard/backend && deno run --allow-net --allow-env main.ts &
 # frontend (in its own terminal)
-cd dashboard/frontend && npm install && npm run dev
+cd dashboard/frontend-new && npm install && npm run dev
 ```
 
 Playwright E2E (Node) — run separately
 
 ```bash
-cd dashboard/frontend
+cd dashboard/frontend-new
 npm install --save-dev @playwright/test
 npx playwright install
 npm run test:e2e
@@ -65,7 +65,7 @@ CI (GitHub Actions)
 Developer notes and tips
 
 - Keep the runtimes separate: Deno scripts, checks and services remain in Deno.
-  Node-based tools (Playwright, Vite) remain in `dashboard/frontend`.
+  Node-based tools (Playwright, Vite) remain in `dashboard/frontend-new`.
 - For quick manual E2E verification use `scripts/e2e_test.sh` — it posts a
   fully-formed pageview event and queries collector + backend metrics.
 - To run everything in one terminal for development, use `make dev-tmux`

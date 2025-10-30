@@ -2,7 +2,7 @@
 
 A lightweight, privacy-first web analytics platform designed to be simple to operate, easy to extend, and production-ready.
 
-[![CI](https://github.com/yourusername/4insights/workflows/Verify/badge.svg)](https://github.com/yourusername/4insights/actions)
+[![CI](https://github.com/MalindiFrank/4insights/workflows/Verify/badge.svg)](https://github.com/MalindiFrank/4insights/actions)
 
 ---
 
@@ -14,12 +14,12 @@ It's designed so you can get started quickly: add a tiny snippet of code to your
 
 ### Key Features
 
-✅ **Privacy-First** - No personal identifiers, no tracking cookies, no user profiling  
-✅ **Lightweight** - Minimal JavaScript tracker (~2KB gzipped)  
-✅ **Self-Hosted** - Full control over your data  
-✅ **Real-Time** - See metrics as they happen  
-✅ **Simple** - Easy to deploy and operate  
-✅ **Extensible** - Modular architecture with pluggable storage and auth  
+ - **Privacy-First** - No personal identifiers, no tracking cookies, no user profiling  
+ - **Lightweight** - Minimal JavaScript tracker (~2KB gzipped)  
+ - **Self-Hosted** - Full control over your data  
+ - **Real-Time** - See metrics as they happen  
+ - **Simple** - Easy to deploy and operate  
+ - **Extensible** - Modular architecture with pluggable storage and auth  
 
 ---
 
@@ -76,7 +76,7 @@ It's designed so you can get started quickly: add a tiny snippet of code to your
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/4insights.git
+git clone https://github.com/MalindiFrank/4insights.git
 cd 4insights
 ```
 
@@ -215,12 +215,12 @@ See [Configuration Guide](docs/CONFIGURATION.md) for complete details.
 
 4Insights is privacy-first by design:
 
-- ✅ **No personal identifiers** - No cookies, no fingerprinting, no user tracking
-- ✅ **Anonymous data only** - Aggregated pageviews and paths
-- ✅ **HTTPS required** - Transport security for production
-- ✅ **API key scoping** - Site-level access control
-- ✅ **Rate limiting** - Protection against abuse
-- ✅ **Self-hosted** - You control your data
+-  - **No personal identifiers** - No cookies, no fingerprinting, no user tracking
+-  - **Anonymous data only** - Aggregated pageviews and paths
+-  - **HTTPS required** - Transport security for production
+-  - **API key scoping** - Site-level access control
+-  - **Rate limiting** - Protection against abuse
+-  - **Self-hosted** - You control your data
 
 ---
 
@@ -272,11 +272,11 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/4insights/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/4insights/discussions)
+- **Issues**: [GitHub Issues](https://github.com/MalindiFrank/4insights/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/MalindiFrank/4insights/discussions)
 - **Documentation**: [docs/](docs/)
 
 ---
 
-**Built with ❤️ using Deno, SvelteKit, and TypeScript**
+**Built with using Deno, SvelteKit, and TypeScript**
 

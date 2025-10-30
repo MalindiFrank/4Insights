@@ -1,146 +1,282 @@
 # 4Insights
 
-4Insights helps website owners understand how people use their sites — which
-pages are popular, how visitors move between pages, and what content works best
-— without spying on anyone. It’s designed so a person can get started quickly:
-you add a tiny snippet of code to your site, and the system collects anonymous,
-summary information that helps you improve your site.
+A lightweight, privacy-first web analytics platform designed to be simple to operate, easy to extend, and production-ready.
 
-A lightweight, privacy-first web analytics platform designed to be simple to
-operate, easy to extend, and production-ready when the team is ready to scale
-and monetize. 4Insights is built with the goals of clarity, maintainability, and
-minimal runtime dependencies — a showcase of system integration best-practices.
+[![CI](https://github.com/yourusername/4insights/workflows/Verify/badge.svg)](https://github.com/yourusername/4insights/actions)
 
 ---
 
-## Vision
+## What is 4Insights?
 
-Deliver a small, robust analytics stack that provides useful, privacy-respecting
-insights to website owners while remaining easy to operate and extend. The
-implementation emphasizes:
+4Insights helps website owners understand how people use their sites — which pages are popular, how visitors move between pages, and what content works best — **without spying on anyone**.
 
-- **Simplicity and clarity** — short, readable code and straightforward
-  developer workflows.
-- **Dependency freedom** — prefer built-in language features and small,
-  auditable dependencies.
-- **Separation of concerns** — modular components (Tracker, Collector, Auth,
-  Dashboard/BFF).
-- **Event-driven design** — reliable event ingestion and pluggable persistence.
-- **Production readiness** — designed to be hardened for scale (storage
-  adapters, auth adapters, rate-limiting, observability).
+It's designed so you can get started quickly: add a tiny snippet of code to your site, and the system collects anonymous, summary information that helps you improve your site.
 
----
+### Key Features
 
-## What 4Insights provides today
-
-- A small **tracker snippet** (JS) to embed on client sites; captures pageviews
-  and basic metadata (SPA-aware).
-- A **Collector** service (Deno) that ingests, validates, and persists tracking
-  events. The default development storage is NDJSON files.
-- A **Dashboard** (SvelteKit) with a Backend-For-Frontend (BFF) to present
-  filtered analytics to users.
-- A **Demo authentication** service that issues temporary API credentials for
-  quick trials and demonstrations.
-
-> Note: Demo auth and NDJSON storage are MVP conveniences and will be replaced
-> by persistent DB-backed services for production.
+✅ **Privacy-First** - No personal identifiers, no tracking cookies, no user profiling  
+✅ **Lightweight** - Minimal JavaScript tracker (~2KB gzipped)  
+✅ **Self-Hosted** - Full control over your data  
+✅ **Real-Time** - See metrics as they happen  
+✅ **Simple** - Easy to deploy and operate  
+✅ **Extensible** - Modular architecture with pluggable storage and auth  
 
 ---
 
-## Architecture (concise)
+## Architecture
 
-- **Tracker → Collector**: the tracker sends events directly to the Collector
-  for performance and scalability. Collector enforces payload validation and
-  site-level credential checks.
-- **Dashboard Client → BFF → Services**: the BFF is responsible for user session
-  validation (members-auth introspection), aggregation, and returning
-  pre-filtered results to the dashboard UI.
-- **Auth**: two independent paths:
+4Insights consists of four microservices:
 
-  - **Demo Auth**: temporary credentials for quick onboarding (kept lightweight
-    and in-memory for demo use).
-  - **Members Auth**: planned production auth with persistent storage, token
-    introspection, user and team management.
+```
+┌─────────────┐
+│   Browser   │
+│  (Tracker)  │
+└──────┬──────┘
+       │ pageview events
+       ↓
+┌─────────────┐     ┌──────────────┐
+│  Collector  │────→│ NDJSON Files │
+│  (Deno)     │     │  (Storage)   │
+└─────────────┘     └──────────────┘
+       ↑
+       │ metrics query
+       │
+┌─────────────┐     ┌──────────────┐
+│  Dashboard  │────→│     Auth     │
+│   Backend   │     │   Service    │
+│   (BFF)     │     │   (Demo)     │
+└──────┬──────┘     └──────────────┘
+       │
+       ↓
+┌─────────────┐
+│  Dashboard  │
+│  Frontend   │
+│ (SvelteKit) │
+└─────────────┘
+```
 
-The system favors a pluggable approach: storage and auth are implemented behind
-adapter interfaces so production services (Postgres, Redis, etc.) can be swapped
-in without large rewrites.
+### Components
+
+- **Tracker** - Client-side JavaScript snippet that captures pageviews
+- **Collector** - Deno service that ingests, validates, and stores events
+- **Auth** - Demo authentication service for API credentials and sessions
+- **Dashboard Backend (BFF)** - Backend-for-frontend that validates tokens and aggregates metrics
+- **Dashboard Frontend** - SvelteKit application for viewing analytics
 
 ---
 
-## Security & privacy principles (high level)
+## Quick Start
+
+### Prerequisites
+
+- **Deno** v2.x+ (for backend services)
+- **Node.js** >=18 (for frontend)
+- **Docker** (optional, for containerized deployment)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/4insights.git
+cd 4insights
+```
+
+### 2. Set up environment variables
+
+```bash
+# Copy example env files
+cp auth/demo/server/.env.example auth/demo/server/.env
+cp collector/.env.example collector/.env
+cp dashboard/backend/.env.example dashboard/backend/.env
+cp dashboard/frontend-new/.env.example dashboard/frontend-new/.env
+```
+
+### 3. Start all services
+
+```bash
+# Using Make (recommended)
+make start-all
+
+# Or using Docker
+docker-compose up
+```
+
+### 4. Access the dashboard
+
+Open http://localhost:5173 in your browser.
+
+1. Click **"Generate Credentials"** to create an API key
+2. Copy the API key and passphrase
+3. Click **"Login"** and enter your credentials
+4. View your analytics dashboard
+
+---
+
+## Documentation
+
+- **[Development Guide](docs/DEVELOPMENT.md)** - Local development setup and workflows
+- **[Deployment Guide](docs/DEPLOY.md)** - Production deployment instructions
+- **[Configuration Guide](docs/CONFIGURATION.md)** - Environment variables and runtime config
+
+### Service Documentation
+
+- [Tracker](tracker/README.md) - Client-side tracking snippet
+- [Collector](collector/README.md) - Event ingestion service
+- [Auth Service](auth/demo/README.md) - Demo authentication
+- [Dashboard Backend](dashboard/backend/README.md) - BFF service
+- [Dashboard Frontend](dashboard/frontend-new/README.md) - SvelteKit UI
+
+---
+
+## Development
+
+### Start services locally
+
+```bash
+# All services
+make start-all
+
+# Or in tmux (separate panes)
+make dev-tmux
+```
+
+### Run tests
+
+```bash
+# All checks and tests
+make verify
+
+# Frontend type checking
+cd dashboard/frontend-new && npm run check
+
+# E2E tests
+cd dashboard/frontend-new && npm run test:e2e
+```
+
+### Format and lint
+
+```bash
+# Deno services
+deno fmt
+deno lint
+
+# Frontend
+cd dashboard/frontend-new && npm run check
+```
+
+---
+
+## Deployment
+
+### Docker (Recommended)
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Cloud Platforms
+
+4Insights can be deployed to:
+
+- **Render.com** - Recommended for Docker containers
+- **Fly.io** - Great for global edge deployment
+- **Vercel** - Frontend only (backend services elsewhere)
+
+See [Deployment Guide](docs/DEPLOY.md) for detailed instructions.
+
+---
+
+## Configuration
+
+All services use **runtime environment variables** - no rebuild needed when URLs change!
+
+```bash
+# Backend services (Deno)
+AUTH_BASE_URL=http://localhost:8001
+COLLECTOR_BASE_URL=http://localhost:8000
+
+# Frontend (SvelteKit)
+DASHBOARD_BACKEND_URL=http://localhost:8010
+AUTH_SERVICE_URL=http://localhost:8001
+COLLECTOR_URL=http://localhost:8000
+```
+
+See [Configuration Guide](docs/CONFIGURATION.md) for complete details.
+
+---
+
+## Privacy & Security
 
 4Insights is privacy-first by design:
 
-- **No personal identifiers by default** — the tracker collects aggregated,
-  non-identifying metadata.
-- **Transport security** — HTTPS everywhere is required for production.
-- **Scoped API keys** — site-level keys limit access to a single site’s events.
-- **Key rotation & secrets management** — rotation procedures and vault-backed
-  secrets are recommended before production usage.
-- **Rate limiting & abuse protection** — Collector enforces quotas per API key
-  and per client IP to protect resources.
+- ✅ **No personal identifiers** - No cookies, no fingerprinting, no user tracking
+- ✅ **Anonymous data only** - Aggregated pageviews and paths
+- ✅ **HTTPS required** - Transport security for production
+- ✅ **API key scoping** - Site-level access control
+- ✅ **Rate limiting** - Protection against abuse
+- ✅ **Self-hosted** - You control your data
 
 ---
 
-## Development & team workflow (where to start)
+## Roadmap
 
-This project is intentionally modular so three people can work independently and
-integrate clearly:
+### P0 (Production Safety)
 
-- **DB owner**: implements persistent storage adapters and migration scripts
-  (Collector and MembersAuth should accept a pluggable storage adapter).
-- **MembersAuth owner**: builds the production authentication service (token
-  issuance, introspection, user/team management).
-- **Integrator (project lead)**: maintains Demo Auth, Collector glue, BFF
-  integration, and overall system design.
+- [ ] Persistent database adapter (PostgreSQL/SQLite)
+- [ ] Rate limiting per API key and IP
+- [ ] Production auth service (replace demo auth)
+- [ ] Comprehensive test coverage
 
-Recommended first steps for contributors (high level):
+### P1 (UX & Operations)
 
-1. Read component READMEs in `/collector`, `/auth`, and `/dashboard`.
-2. Run the demo locally and generate a temporary API key via Demo Auth.
-3. Use the tracker snippet on a local site/page to verify events are delivered
-   to Collector.
+- [ ] Data export (CSV/JSON)
+- [ ] Custom date ranges
+- [ ] Real-time dashboard updates
+- [ ] Prometheus metrics
+- [ ] Grafana dashboards
 
----
+### P2 (Advanced Features)
 
-## Roadmap (prioritized)
-
-**P0 (short-term, production safety)**
-
-- NDJSON atomic write + rotation + retention or pluggable DB adapter.
-- Rate limiting (per API key & per IP).
-- Auth adapters: refactor demo auth into a pluggable interface.
-- CI and test coverage for core services.
-
-**P1 (important UX & operations)**
-
-- Schema-based payload validation and clearer tracker contract docs.
-- Export capabilities (CSV / NDJSON) in dashboard.
-- Prometheus-style metrics and example Grafana dashboards.
-
-## Contribution guidelines (short)
-
-- Follow the code style and keep changes small and well-tested.
-- Open PRs for each logical change and include tests for new behavior. CI runs
-  basic Deno and frontend checks.
-- For changes touching storage or auth, prefer an adapter/interface-first
-  approach to preserve modularity.
+- [ ] Custom events tracking
+- [ ] Funnel analysis
+- [ ] Referrer tracking
+- [ ] Geographic insights
+- [ ] Multi-user teams
 
 ---
 
-## Where to get help
+## Contributing
 
-Open an issue in this repository for design questions or to propose changes to
-architecture. The repository contains component-specific READMEs with
-development notes and configuration details.
+Contributions are welcome! Please follow these guidelines:
+
+1. **Keep changes small** - One logical change per PR
+2. **Add tests** - Cover new functionality
+3. **Follow style** - Use `deno fmt` and `npm run check`
+4. **Update docs** - Keep documentation in sync
+
+See [Development Guide](docs/DEVELOPMENT.md) for setup instructions.
 
 ---
 
 ## License
 
-This project uses the MIT license. See the `LICENSE` file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-_Last updated: see repository history for the exact commit._
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yourusername/4insights/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/4insights/discussions)
+- **Documentation**: [docs/](docs/)
+
+---
+
+**Built with ❤️ using Deno, SvelteKit, and TypeScript**
+

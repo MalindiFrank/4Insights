@@ -162,11 +162,11 @@ Just rename the variables - no code changes needed!
 
 ## Benefits of Runtime Configuration
 
-✅ **Same pattern** across all services (backend and frontend)  
-✅ **No rebuild** needed when URLs change  
-✅ **Easy deployment** - just set environment variables  
-✅ **Environment-specific** configs without multiple builds  
-✅ **Secure** - secrets never baked into bundles  
+- **Same pattern** across all services (backend and frontend)  
+- **No rebuild** needed when URLs change  
+- **Easy deployment** - just set environment variables  
+- **Environment-specific** configs without multiple builds  
+- **Secure** - secrets never baked into bundles  
 
 ## Example: Deploying to Render
 

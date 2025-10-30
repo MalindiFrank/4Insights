@@ -36,7 +36,7 @@ cp dashboard/frontend-new/.env.example dashboard/frontend-new/.env
 2. Install dependencies and start dev server:
 
 ```bash
-cd dashboard/frontend
+cd dashboard/frontend-new
 npm install
 npm run dev
 ```
@@ -57,15 +57,34 @@ npm run preview
 
 ## Configuration
 
-Use `dashboard/frontend-new/.env` (created from `.env.example`) to configure the
-frontend. The SvelteKit app reads variables prefixed with `VITE_` via
-`import.meta.env`.
+The frontend uses **runtime configuration** (like backend services) - no rebuild needed when URLs change!
 
-Important variables (in `dashboard/frontend-new/.env`):
+### Environment Variables
 
-- VITE_DASHBOARD_BACKEND_URL — URL of the dashboard backend BFF (default `http://localhost:8010`)
+Create `.env` from `.env.example`:
 
-By default the frontend will call `${VITE_DASHBOARD_BACKEND_URL}/dashboard/metrics` to fetch metrics.
+```bash
+cp dashboard/frontend-new/.env.example dashboard/frontend-new/.env
+```
+
+Important variables:
+
+- `DASHBOARD_BACKEND_URL` - URL of the dashboard backend BFF (default: `http://localhost:8010`)
+- `AUTH_SERVICE_URL` - URL of the auth service (default: `http://localhost:8001`)
+- `COLLECTOR_URL` - URL of the collector service (default: `http://localhost:8000`)
+
+### How It Works
+
+The frontend loads configuration at **runtime** via the `/api/config` endpoint:
+
+1. On page load, the app fetches `/api/config`
+2. The endpoint reads `process.env` (Node.js server)
+3. Configuration is cached in the browser
+4. No rebuild needed when URLs change!
+
+This is the same pattern used by backend services (Deno).
+
+See [../../docs/CONFIGURATION.md](../../docs/CONFIGURATION.md) for complete details.
 
 ## Development
 
@@ -83,7 +102,7 @@ By default the frontend will call `${VITE_DASHBOARD_BACKEND_URL}/dashboard/metri
 - Playwright-based browser tests are intentionally run separately (Node runtime). To run Playwright tests:
 
 ```bash
-cd dashboard/frontend
+cd dashboard/frontend-new
 npm install --save-dev @playwright/test
 npx playwright install
 npm run test:e2e

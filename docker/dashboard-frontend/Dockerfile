@@ -14,14 +14,23 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Accept build arguments for Vite environment variables
+# These MUST be provided at build time for production deployments
+# Defaults are for local development only
 ARG VITE_DASHBOARD_BACKEND_URL=http://localhost:8010
 ARG VITE_AUTH_SERVICE_URL=http://localhost:8001
 ARG VITE_COLLECTOR_URL=http://localhost:8000
 
 # Set them as environment variables for the build
+# Vite will bake these into the client-side bundle at build time
 ENV VITE_DASHBOARD_BACKEND_URL=$VITE_DASHBOARD_BACKEND_URL
 ENV VITE_AUTH_SERVICE_URL=$VITE_AUTH_SERVICE_URL
 ENV VITE_COLLECTOR_URL=$VITE_COLLECTOR_URL
+
+# Log the URLs being used (for debugging build issues)
+RUN echo "Building with:" && \
+    echo "  VITE_DASHBOARD_BACKEND_URL=$VITE_DASHBOARD_BACKEND_URL" && \
+    echo "  VITE_AUTH_SERVICE_URL=$VITE_AUTH_SERVICE_URL" && \
+    echo "  VITE_COLLECTOR_URL=$VITE_COLLECTOR_URL"
 
 # Copy package files from the NEW frontend
 COPY dashboard/frontend-new/package.json dashboard/frontend-new/package-lock.json ./

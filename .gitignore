@@ -57,9 +57,11 @@ coverage/
 
 # Service-level local env files (ignored; keep examples tracked)
 auth/demo/.env
+auth/demo/server/.env
 collector/.env
 dashboard/backend/.env
 dashboard/frontend/.env
+dashboard/frontend-new/.env
 tracker/.env
 
 # Local device config for marscode tool (ignore)

@@ -1,12 +1,12 @@
 /**
  * Authentication service for the dashboard
- * 
+ *
  * Handles login, logout, and token management with the auth service.
  * Provides a clean interface for authentication state management.
  */
 
-import { config } from './config';
-import type { AuthCredentials, AuthSession } from './types';
+import { loadConfig } from './config';
+import type { AuthCredentials, AuthSession, DashboardConfig } from './types';
 
 /**
  * Authentication service class
@@ -14,11 +14,23 @@ import type { AuthCredentials, AuthSession } from './types';
 export class AuthService {
   private static readonly TOKEN_KEY = 'auth_token';
   private static readonly API_KEY_KEY = 'auth_api_key';
+  private config: DashboardConfig | null = null;
+
+  /**
+   * Ensure configuration is loaded
+   */
+  private async ensureConfig(): Promise<DashboardConfig> {
+    if (!this.config) {
+      this.config = await loadConfig();
+    }
+    return this.config;
+  }
 
   /**
    * Generate new credentials from auth service
    */
   async generateCredentials(): Promise<AuthCredentials> {
+    const config = await this.ensureConfig();
     const response = await fetch(`${config.authServiceUrl}/demo/credentials`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,6 +52,7 @@ export class AuthService {
    * Login with credentials and get session token
    */
   async login(credentials: AuthCredentials): Promise<AuthSession> {
+    const config = await this.ensureConfig();
     const response = await fetch(`${config.authServiceUrl}/demo/sessions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,6 +87,7 @@ export class AuthService {
     }
 
     try {
+      const config = await this.ensureConfig();
       const response = await fetch(`${config.authServiceUrl}/demo/verify`, {
         headers: { 'Authorization': `Bearer ${token}` },
         credentials: 'include'
@@ -100,6 +114,7 @@ export class AuthService {
     const token = this.getStoredToken();
     if (token) {
       try {
+        const config = await this.ensureConfig();
         await fetch(`${config.authServiceUrl}/demo/sessions`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` },

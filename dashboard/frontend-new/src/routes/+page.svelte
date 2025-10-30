@@ -5,13 +5,14 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { authService } from '$lib/auth.js';
-  import { config } from '$lib/config.js';
-  import type { MetricsOverview } from '$lib/types.js';
+  import { loadConfig } from '$lib/config.js';
+  import type { MetricsOverview, DashboardConfig } from '$lib/types.js';
 
   let loading = true;
   let error: string | null = null;
   let metrics: MetricsOverview | null = null;
   let isAuthenticated = false;
+  let config: DashboardConfig | null = null;
 
   /**
    * Load metrics from dashboard backend
@@ -19,8 +20,13 @@
   async function loadMetrics() {
     loading = true;
     error = null;
-    
+
     try {
+      // Load runtime configuration if not already loaded
+      if (!config) {
+        config = await loadConfig();
+      }
+
       const token = authService.getStoredToken();
       if (!token) {
         throw new Error('No authentication token found');
@@ -34,7 +40,7 @@
         headers,
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           // Token expired or invalid
@@ -74,10 +80,13 @@
     loadMetrics();
   }
 
-  onMount(() => {
+  onMount(async () => {
+    // Load runtime configuration first
+    config = await loadConfig();
+
     // Check authentication status
     isAuthenticated = authService.isAuthenticated();
-    
+
     if (!isAuthenticated) {
       goto('/login');
       return;

@@ -33,12 +33,14 @@ services:
     build:
       context: .
       dockerfile: docker/dashboard-frontend/Dockerfile
-      args:
-        - VITE_DASHBOARD_BACKEND_URL=http://localhost:8010
-        - VITE_AUTH_SERVICE_URL=http://localhost:8001
-        - VITE_COLLECTOR_URL=http://localhost:8000
     ports:
       - "5173:3000"
+    environment:
+      # Runtime environment variables (read by /api/config endpoint)
+      # These work the same way as backend services
+      - DASHBOARD_BACKEND_URL=http://localhost:8010
+      - AUTH_SERVICE_URL=http://localhost:8001
+      - COLLECTOR_URL=http://localhost:8000
 
 volumes:
   collector_data:

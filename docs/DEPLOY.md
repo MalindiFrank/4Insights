@@ -33,12 +33,22 @@ DEMO_HMAC_SECRET=your-secret-key-change-in-production
 TOKEN_EXPIRY_MINUTES=25
 CREDENTIAL_EXPIRY_HOURS=1
 DEMO_AUTH_PORT=8001
+
+# CORS allowed origins (explicit - no wildcards for security)
+AUTH_ALLOWED_ORIGIN_1=http://localhost:5173
+AUTH_ALLOWED_ORIGIN_2=http://localhost:3000
+AUTH_ALLOWED_ORIGIN_3=http://localhost:8010
 ```
 
 #### Collector Service
 ```bash
 COLLECTOR_PORT=8000
 DATA_DIR=./data
+
+# CORS allowed origins (explicit - no wildcards for security)
+COLLECTOR_ALLOWED_ORIGIN_1=http://localhost:5173
+COLLECTOR_ALLOWED_ORIGIN_2=http://localhost:3000
+COLLECTOR_ALLOWED_ORIGIN_3=http://localhost:8010
 ```
 
 #### Dashboard Backend (BFF)
@@ -46,6 +56,10 @@ DATA_DIR=./data
 AUTH_BASE_URL=http://localhost:8001
 COLLECTOR_BASE_URL=http://localhost:8000
 DASHBOARD_BACKEND_PORT=8010
+
+# CORS allowed origins (explicit - no wildcards for security)
+BACKEND_ALLOWED_ORIGIN_1=http://localhost:5173
+BACKEND_ALLOWED_ORIGIN_2=http://localhost:3000
 ```
 
 #### Dashboard Frontend
@@ -54,9 +68,12 @@ DASHBOARD_BACKEND_URL=http://localhost:8010
 AUTH_SERVICE_URL=http://localhost:8001
 COLLECTOR_URL=http://localhost:8000
 PORT=3000
+ORIGIN=http://localhost:5173
 ```
 
 **Note**: Variable names changed from `VITE_*` to standard names. Frontend now loads config at runtime like backend services.
+
+**Security**: All services use explicit CORS allowed origins - no wildcards (`*`) for security.
 
 ## Docker Deployment (Local/Testing)
 

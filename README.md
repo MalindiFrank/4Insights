@@ -205,6 +205,11 @@ COLLECTOR_BASE_URL=http://localhost:8000
 DASHBOARD_BACKEND_URL=http://localhost:8010
 AUTH_SERVICE_URL=http://localhost:8001
 COLLECTOR_URL=http://localhost:8000
+
+# CORS Security (explicit allowed origins - no wildcards)
+AUTH_ALLOWED_ORIGIN_1=http://localhost:5173
+BACKEND_ALLOWED_ORIGIN_1=http://localhost:5173
+COLLECTOR_ALLOWED_ORIGIN_1=http://localhost:5173
 ```
 
 See [Configuration Guide](docs/CONFIGURATION.md) for complete details.
@@ -215,9 +220,11 @@ See [Configuration Guide](docs/CONFIGURATION.md) for complete details.
 
 4Insights is privacy-first by design:
 
--  - **No personal identifiers** - No cookies, no fingerprinting, no user tracking
--  - **Anonymous data only** - Aggregated pageviews and paths
--  - **HTTPS required** - Transport security for production
+- **No personal identifiers** - No cookies, no fingerprinting, no user tracking
+- **Anonymous data only** - Aggregated pageviews and paths
+- **HTTPS required** - Transport security for production
+- **Explicit CORS origins** - No wildcards (`*`), only allowed origins accepted
+- **Credential support** - Secure cross-origin requests with `Access-Control-Allow-Credentials`
 -  - **API key scoping** - Site-level access control
 -  - **Rate limiting** - Protection against abuse
 -  - **Self-hosted** - You control your data

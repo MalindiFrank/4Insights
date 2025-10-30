@@ -20,17 +20,28 @@ function corsHeaders(origin: string | null): HeadersInit {
     Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
   ].filter(Boolean);
 
-  // Check if origin is allowed
-  const allowedOrigin = origin && allowedOrigins.includes(origin)
-    ? origin
-    : allowedOrigins[0]; // Default to first allowed origin
+  // Check if origin is allowed (exact match only)
+  const isAllowed = origin && allowedOrigins.includes(origin);
 
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
-    "Access-Control-Allow-Credentials": "true",
-  };
+  if (isAllowed) {
+    // Return CORS headers with credentials support for allowed origins
+    return {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin", // Required for proper caching with credentials
+    };
+  } else {
+    // For unauthorized origins, return minimal headers without credentials
+    // This prevents CORS attacks while allowing non-credentialed requests
+    return {
+      "Access-Control-Allow-Origin": allowedOrigins[0], // Safe fallback for dev
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
+      "Vary": "Origin",
+    };
+  }
 }
 
 function json(body: unknown, status = 200, headers: HeadersInit = {}) {

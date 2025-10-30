@@ -49,22 +49,31 @@ class AuthServer {
       Deno.env.get("AUTH_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
     ].filter(Boolean);
 
-    // Check if origin is allowed
-    const allowedOrigin = origin && allowedOrigins.includes(origin)
-      ? origin
-      : allowedOrigins[0]; // Default to first allowed origin
+    // Check if origin is allowed (exact match only)
+    const isAllowed = origin && allowedOrigins.includes(origin);
 
-    // Add CORS headers
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": allowedOrigin,
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Access-Control-Allow-Credentials": "true",
+    // Add CORS headers based on origin validation
+    const corsHeaders: Record<string, string> = {
+      "Vary": "Origin", // Required for proper caching with credentials
     };
 
-    // Handle preflight requests
+    if (isAllowed) {
+      // Return CORS headers with credentials support for allowed origins
+      corsHeaders["Access-Control-Allow-Origin"] = origin;
+      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
+      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+      corsHeaders["Access-Control-Allow-Credentials"] = "true";
+    } else {
+      // For unauthorized origins, return minimal headers without credentials
+      // This prevents CORS attacks while allowing non-credentialed requests
+      corsHeaders["Access-Control-Allow-Origin"] = allowedOrigins[0]; // Safe fallback for dev
+      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
+      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+    }
+
+    // Handle preflight requests (return 204 No Content as per spec)
     if (method === "OPTIONS") {
-      return new Response(null, { status: 200, headers: corsHeaders });
+      return new Response(null, { status: 204, headers: corsHeaders });
     }
 
     try {

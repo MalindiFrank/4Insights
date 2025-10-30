@@ -40,12 +40,26 @@ class AuthServer {
     const url = new URL(req.url);
     const path = url.pathname;
     const method = req.method;
+    const origin = req.headers.get("origin");
+
+    // Explicit allowed origins - no wildcards for security
+    const allowedOrigins = [
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
+    ].filter(Boolean);
+
+    // Check if origin is allowed
+    const allowedOrigin = origin && allowedOrigins.includes(origin)
+      ? origin
+      : allowedOrigins[0]; // Default to first allowed origin
 
     // Add CORS headers
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Origin": allowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Credentials": "true",
     };
 
     // Handle preflight requests

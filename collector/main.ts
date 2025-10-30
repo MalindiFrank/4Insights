@@ -13,10 +13,23 @@ await store.init();
 await siteStore.init();
 
 function corsHeaders(origin: string | null): HeadersInit {
+  // Explicit allowed origins - no wildcards for security
+  const allowedOrigins = [
+    Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
+    Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
+    Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
+  ].filter(Boolean);
+
+  // Check if origin is allowed
+  const allowedOrigin = origin && allowedOrigins.includes(origin)
+    ? origin
+    : allowedOrigins[0]; // Default to first allowed origin
+
   return {
-    "Access-Control-Allow-Origin": origin ?? "*",
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-API-Key",
+    "Access-Control-Allow-Credentials": "true",
   };
 }
 

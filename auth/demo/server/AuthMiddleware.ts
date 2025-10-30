@@ -83,14 +83,26 @@ export class AuthMiddleware {
 
   /**
    * Get CORS headers from .env or default to localhost for dev
+   * Supports multiple allowed origins for security
    */
-  static getCorsHeaders(): Record<string, string> {
-    const allowedOrigin = Deno.env.get("AUTH_ALLOWED_ORIGIN") ||
-      "http://localhost:5173";
+  static getCorsHeaders(origin: string | null = null): Record<string, string> {
+    // Explicit allowed origins - no wildcards for security
+    const allowedOrigins = [
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
+      Deno.env.get("AUTH_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
+    ].filter(Boolean);
+
+    // Check if origin is allowed
+    const allowedOrigin = origin && allowedOrigins.includes(origin)
+      ? origin
+      : allowedOrigins[0]; // Default to first allowed origin
+
     return {
       "Access-Control-Allow-Origin": allowedOrigin,
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Credentials": "true",
     };
   }
 

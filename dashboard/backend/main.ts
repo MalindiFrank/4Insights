@@ -19,8 +19,17 @@ const authClient = new AuthClient(config);
 const metricsService = new MetricsService(config);
 
 function corsHeaders(origin: string | null): HeadersInit {
-  // When using credentials, origin cannot be "*" - must be specific
-  const allowedOrigin = origin ?? "http://localhost:5173";
+  // Explicit allowed origins - no wildcards for security
+  const allowedOrigins = [
+    Deno.env.get("BACKEND_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
+    Deno.env.get("BACKEND_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
+  ].filter(Boolean);
+
+  // Check if origin is allowed
+  const allowedOrigin = origin && allowedOrigins.includes(origin)
+    ? origin
+    : allowedOrigins[0]; // Default to first allowed origin
+
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE",

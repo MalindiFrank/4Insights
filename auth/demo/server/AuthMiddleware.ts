@@ -82,43 +82,8 @@ export class AuthMiddleware {
   }
 
   /**
-   * Get CORS headers from .env or default to localhost for dev
-   * Supports multiple allowed origins for security
-   */
-  static getCorsHeaders(origin: string | null = null): Record<string, string> {
-    // Explicit allowed origins - no wildcards for security
-    const allowedOrigins = [
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
-    ].filter(Boolean);
-
-    // Check if origin is allowed (exact match only)
-    const isAllowed = origin && allowedOrigins.includes(origin);
-
-    const corsHeaders: Record<string, string> = {
-      "Vary": "Origin", // Required for proper caching with credentials
-    };
-
-    if (isAllowed) {
-      // Return CORS headers with credentials support for allowed origins
-      corsHeaders["Access-Control-Allow-Origin"] = origin;
-      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
-      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-      corsHeaders["Access-Control-Allow-Credentials"] = "true";
-    } else {
-      // For unauthorized origins, return minimal headers without credentials
-      // This prevents CORS attacks while allowing non-credentialed requests
-      corsHeaders["Access-Control-Allow-Origin"] = allowedOrigins[0]; // Safe fallback for dev
-      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
-      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-    }
-
-    return corsHeaders;
-  }
-
-  /**
    * Create standardized error response
+   * Note: CORS headers are added by the main request handler
    */
   static createErrorResponse(
     message: string,
@@ -132,13 +97,13 @@ export class AuthMiddleware {
       status: statusCode,
       headers: {
         "Content-Type": "application/json",
-        ...AuthMiddleware.getCorsHeaders(),
       },
     });
   }
 
   /**
    * Create standardized success response
+   * Note: CORS headers are added by the main request handler
    */
   static createSuccessResponse(
     data: unknown,
@@ -154,7 +119,6 @@ export class AuthMiddleware {
       status: statusCode,
       headers: {
         "Content-Type": "application/json",
-        ...AuthMiddleware.getCorsHeaders(),
       },
     });
   }

@@ -19,34 +19,32 @@ const authClient = new AuthClient(config);
 const metricsService = new MetricsService(config);
 
 function corsHeaders(origin: string | null): HeadersInit {
-  // Explicit allowed origins - no wildcards for security
-  const allowedOrigins = [
-    Deno.env.get("BACKEND_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
-    Deno.env.get("BACKEND_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
-  ].filter(Boolean);
+  // Read allowed origins from single env var (comma separated) for easier deployment config
+  const rawAllowed = Deno.env.get("BACKEND_ALLOWED_ORIGINS")
+    ?? "http://localhost:5173,http://localhost:3000";
+  const allowedOrigins = rawAllowed.split(",").map(s => s.trim()).filter(Boolean);
 
   // Check if origin is allowed (exact match only)
-  const isAllowed = origin && allowedOrigins.includes(origin);
+  const isAllowed = origin !== null && allowedOrigins.includes(origin);
+
+  // Build CORS headers - only set Access-Control-Allow-Origin when origin is allowed
+  const headers: HeadersInit = {
+    "Vary": "Origin", // Required for proper caching with credentials
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
 
   if (isAllowed) {
-    // Return CORS headers with credentials support for allowed origins
     return {
-      "Access-Control-Allow-Origin": origin,
-      "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      ...headers,
+      "Access-Control-Allow-Origin": origin!,
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin", // Required for proper caching with credentials
-    };
-  } else {
-    // For unauthorized origins, return minimal headers without credentials
-    // This prevents CORS attacks while allowing non-credentialed requests
-    return {
-      "Access-Control-Allow-Origin": allowedOrigins[0], // Safe fallback for dev
-      "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Vary": "Origin",
     };
   }
+
+  // For unauthorized origins, don't set Access-Control-Allow-Origin
+  // Browser will block the request, which is the desired security behavior
+  return headers;
 }
 
 function json(body: unknown, status = 200, headers: HeadersInit = {}) {

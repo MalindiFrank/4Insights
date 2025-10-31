@@ -42,58 +42,77 @@ class AuthServer {
     const method = req.method;
     const origin = req.headers.get("origin");
 
-    // Explicit allowed origins - no wildcards for security
-    const allowedOrigins = [
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_1") ?? "http://localhost:5173", // Frontend dev
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_2") ?? "http://localhost:3000", // Frontend prod
-      Deno.env.get("AUTH_ALLOWED_ORIGIN_3") ?? "http://localhost:8010", // Backend
-    ].filter(Boolean);
+    // Read allowed origins from single env var (comma separated) for easier deployment config
+    const rawAllowed = Deno.env.get("AUTH_ALLOWED_ORIGINS")
+      ?? "http://localhost:5173,http://localhost:3000,http://localhost:8010";
+    const allowedOrigins = rawAllowed.split(",").map(s => s.trim()).filter(Boolean);
 
     // Check if origin is allowed (exact match only)
-    const isAllowed = origin && allowedOrigins.includes(origin);
+    const isAllowed = origin !== null && allowedOrigins.includes(origin);
 
-    // Add CORS headers based on origin validation
+    // Build CORS headers - only set Access-Control-Allow-Origin when origin is allowed
     const corsHeaders: Record<string, string> = {
       "Vary": "Origin", // Required for proper caching with credentials
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
     if (isAllowed) {
-      // Return CORS headers with credentials support for allowed origins
-      corsHeaders["Access-Control-Allow-Origin"] = origin;
-      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
-      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+      corsHeaders["Access-Control-Allow-Origin"] = origin!;
       corsHeaders["Access-Control-Allow-Credentials"] = "true";
-    } else {
-      // For unauthorized origins, return minimal headers without credentials
-      // This prevents CORS attacks while allowing non-credentialed requests
-      corsHeaders["Access-Control-Allow-Origin"] = allowedOrigins[0]; // Safe fallback for dev
-      corsHeaders["Access-Control-Allow-Methods"] = "GET, POST, DELETE, OPTIONS";
-      corsHeaders["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
     }
+    // No else block - don't set Access-Control-Allow-Origin for unauthorized origins
 
     // Handle preflight requests (return 204 No Content as per spec)
     if (method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: corsHeaders });
+      const headers = new Headers();
+      Object.entries(corsHeaders).forEach(([k, v]) => headers.set(k, v));
+      return new Response(null, { status: 204, headers });
     }
 
     try {
-      // Route handling
+      // Route handling - capture the Response from handler functions
+      let resp: Response;
       if (path === "/health" && method === "GET") {
-        return this.handleHealthCheck();
+        resp = this.handleHealthCheck();
       } else if (path === "/demo/credentials" && method === "POST") {
-        return await this.handleGenerateCredentials();
+        resp = await this.handleGenerateCredentials();
       } else if (path === "/demo/sessions" && method === "POST") {
-        return await this.handleCreateSession(req);
+        resp = await this.handleCreateSession(req);
       } else if (path === "/demo/verify" && method === "GET") {
-        return await this.handleVerifyToken(req);
+        resp = await this.handleVerifyToken(req);
       } else if (path === "/demo/sessions" && method === "DELETE") {
-        return await this.handleLogout(req);
+        resp = await this.handleLogout(req);
       } else {
-        return AuthMiddleware.createErrorResponse("Route not found", 404);
+        resp = AuthMiddleware.createErrorResponse("Route not found", 404);
+      }
+
+      // Merge CORS headers into the response (only if origin allowed)
+      // Important: preserve existing headers and body
+      const newHeaders = new Headers(resp.headers);
+      Object.entries(corsHeaders).forEach(([k, v]) => {
+        // Only set Access-Control-Allow-Origin if origin is allowed
+        if (k === "Access-Control-Allow-Origin" && !isAllowed) return;
+        newHeaders.set(k, v);
+      });
+
+      // Safely clone/return body: read arrayBuffer if body exists
+      if (resp.body) {
+        const ab = await resp.arrayBuffer();
+        return new Response(ab, { status: resp.status, headers: newHeaders });
+      } else {
+        return new Response(null, { status: resp.status, headers: newHeaders });
       }
     } catch (error) {
       console.error("Request handling error:", error);
-      return AuthMiddleware.createErrorResponse("Internal server error", 500);
+      // Ensure error response also carries CORS headers when applicable
+      const errResp = AuthMiddleware.createErrorResponse("Internal server error", 500);
+      const headers = new Headers(errResp.headers);
+      Object.entries(corsHeaders).forEach(([k, v]) => {
+        if (k === "Access-Control-Allow-Origin" && !isAllowed) return;
+        headers.set(k, v);
+      });
+      return new Response(await errResp.arrayBuffer(), { status: errResp.status, headers });
     }
   }
 

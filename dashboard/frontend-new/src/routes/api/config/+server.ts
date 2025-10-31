@@ -6,20 +6,17 @@
  */
 
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '../../../../.svelte-kit/types/src/routes/api/config/$types.d.ts';
 
 export const GET: RequestHandler = () => {
   // Read environment variables at runtime
   // These can be set via .env file or injected by the hosting platform
   const config = {
-    dashboardBackendUrl: process.env.VITE_DASHBOARD_BACKEND_URL || 
-                        process.env.DASHBOARD_BACKEND_URL || 
+    dashboardBackendUrl: process.env.DASHBOARD_BACKEND_URL || 
                         'http://localhost:8010',
-    authServiceUrl: process.env.VITE_AUTH_SERVICE_URL || 
-                   process.env.AUTH_SERVICE_URL || 
+    authServiceUrl: process.env.AUTH_SERVICE_URL || 
                    'http://localhost:8001',
-    collectorUrl: process.env.VITE_COLLECTOR_URL || 
-                 process.env.COLLECTOR_URL || 
+    collectorUrl: process.env.COLLECTOR_URL || 
                  'http://localhost:8000'
   };
 

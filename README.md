@@ -116,6 +116,7 @@ Open http://localhost:5173 in your browser.
 - **[Development Guide](docs/DEVELOPMENT.md)** - Local development setup and workflows
 - **[Deployment Guide](docs/DEPLOY.md)** - Production deployment instructions
 - **[Configuration Guide](docs/CONFIGURATION.md)** - Environment variables and runtime config
+- **[CORS Fixes Guide](docs/CORS-FIXES.md)** - CORS implementation and troubleshooting
 
 ### Service Documentation
 
@@ -206,13 +207,13 @@ DASHBOARD_BACKEND_URL=http://localhost:8010
 AUTH_SERVICE_URL=http://localhost:8001
 COLLECTOR_URL=http://localhost:8000
 
-# CORS Security (explicit allowed origins - no wildcards)
-AUTH_ALLOWED_ORIGIN_1=http://localhost:5173
-BACKEND_ALLOWED_ORIGIN_1=http://localhost:5173
-COLLECTOR_ALLOWED_ORIGIN_1=http://localhost:5173
+# CORS Security (comma-separated allowed origins - no wildcards)
+AUTH_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:8010
+BACKEND_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+COLLECTOR_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:8010
 ```
 
-See [Configuration Guide](docs/CONFIGURATION.md) for complete details.
+See [Configuration Guide](docs/CONFIGURATION.md) and [CORS Fixes Guide](docs/CORS-FIXES.md) for complete details.
 
 ---
 

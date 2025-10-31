@@ -11,10 +11,8 @@ TOKEN_EXPIRY_MINUTES=25
 CREDENTIAL_EXPIRY_HOURS=1
 DEMO_AUTH_PORT=8001
 
-# CORS allowed origins (explicit - no wildcards for security)
-AUTH_ALLOWED_ORIGIN_1=http://localhost:5173
-AUTH_ALLOWED_ORIGIN_2=http://localhost:3000
-AUTH_ALLOWED_ORIGIN_3=http://localhost:8010
+# CORS allowed origins (comma-separated list)
+AUTH_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:8010
 ```
 
 ### Collector Service
@@ -22,10 +20,8 @@ AUTH_ALLOWED_ORIGIN_3=http://localhost:8010
 COLLECTOR_PORT=8000
 DATA_DIR=./data
 
-# CORS allowed origins (explicit - no wildcards for security)
-COLLECTOR_ALLOWED_ORIGIN_1=http://localhost:5173
-COLLECTOR_ALLOWED_ORIGIN_2=http://localhost:3000
-COLLECTOR_ALLOWED_ORIGIN_3=http://localhost:8010
+# CORS allowed origins (comma-separated list)
+COLLECTOR_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:8010
 ```
 
 ### Dashboard Backend (BFF)
@@ -34,9 +30,8 @@ AUTH_BASE_URL=http://localhost:8001
 COLLECTOR_BASE_URL=http://localhost:8000
 DASHBOARD_BACKEND_PORT=8010
 
-# CORS allowed origins (explicit - no wildcards for security)
-BACKEND_ALLOWED_ORIGIN_1=http://localhost:5173
-BACKEND_ALLOWED_ORIGIN_2=http://localhost:3000
+# CORS allowed origins (comma-separated list)
+BACKEND_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
 ```
 
 ### Dashboard Frontend
@@ -189,63 +184,66 @@ All services use **explicit allowed origins** - no wildcards (`*`) for security.
 
 ### How CORS Works
 
-Each service validates the `Origin` header against a list of allowed origins:
+Each service validates the `Origin` header against a comma-separated list of allowed origins:
 
 ```typescript
 // Example from collector/main.ts
-const allowedOrigins = [
-  Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_1") ?? "http://localhost:5173",
-  Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_2") ?? "http://localhost:3000",
-  Deno.env.get("COLLECTOR_ALLOWED_ORIGIN_3") ?? "http://localhost:8010",
-].filter(Boolean);
+const rawAllowed = Deno.env.get("COLLECTOR_ALLOWED_ORIGINS")
+  ?? "http://localhost:5173,http://localhost:3000,http://localhost:8010";
+const allowedOrigins = rawAllowed.split(",").map(s => s.trim()).filter(Boolean);
 
-const allowedOrigin = origin && allowedOrigins.includes(origin)
-  ? origin
-  : allowedOrigins[0]; // Default to first allowed origin
+const isAllowed = origin !== null && allowedOrigins.includes(origin);
+
+// Only set Access-Control-Allow-Origin when origin is explicitly allowed
+if (isAllowed) {
+  headers["Access-Control-Allow-Origin"] = origin;
+  headers["Access-Control-Allow-Credentials"] = "true";
+}
+// For unauthorized origins, Access-Control-Allow-Origin is NOT set
+// Browser will block the request, which is the desired security behavior
 ```
 
 ### Production CORS Configuration
 
-For production, set explicit allowed origins:
+For production, set explicit allowed origins as comma-separated values:
 
 **Auth Service:**
 ```bash
-AUTH_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com
-AUTH_ALLOWED_ORIGIN_2=https://your-backend.onrender.com
+AUTH_ALLOWED_ORIGINS=https://your-frontend.onrender.com,https://your-backend.onrender.com
 ```
 
 **Collector Service:**
 ```bash
-COLLECTOR_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com
-COLLECTOR_ALLOWED_ORIGIN_2=https://your-backend.onrender.com
+COLLECTOR_ALLOWED_ORIGINS=https://your-frontend.onrender.com,https://your-backend.onrender.com
 ```
 
 **Dashboard Backend:**
 ```bash
-BACKEND_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com
+BACKEND_ALLOWED_ORIGINS=https://your-frontend.onrender.com
 ```
 
-**Important:** Never use `*` wildcards in production - this creates security vulnerabilities.
+**Important:**
+- Never use `*` wildcards in production - this creates security vulnerabilities
+- Only origins in the allowed list will receive `Access-Control-Allow-Origin` headers
+- Unauthorized origins will be blocked by the browser (no CORS headers sent)
 
 ## Example: Deploying to Render
 
 1. **Deploy Auth Service**
    - Set `DEMO_HMAC_SECRET`, `DEMO_AUTH_PORT`
-   - Set `AUTH_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com`
-   - Set `AUTH_ALLOWED_ORIGIN_2=https://your-backend.onrender.com`
+   - Set `AUTH_ALLOWED_ORIGINS=https://your-frontend.onrender.com,https://your-backend.onrender.com`
    - Note the URL: `https://your-auth.onrender.com`
 
 2. **Deploy Collector Service**
    - Set `COLLECTOR_PORT`, `DATA_DIR`
-   - Set `COLLECTOR_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com`
-   - Set `COLLECTOR_ALLOWED_ORIGIN_2=https://your-backend.onrender.com`
+   - Set `COLLECTOR_ALLOWED_ORIGINS=https://your-frontend.onrender.com,https://your-backend.onrender.com`
    - Add persistent disk at `/data`
    - Note the URL: `https://your-collector.onrender.com`
 
 3. **Deploy Dashboard Backend**
    - Set `AUTH_BASE_URL=https://your-auth.onrender.com`
    - Set `COLLECTOR_BASE_URL=https://your-collector.onrender.com`
-   - Set `BACKEND_ALLOWED_ORIGIN_1=https://your-frontend.onrender.com`
+   - Set `BACKEND_ALLOWED_ORIGINS=https://your-frontend.onrender.com`
    - Note the URL: `https://your-backend.onrender.com`
 
 4. **Deploy Dashboard Frontend**
